@@ -18,30 +18,29 @@ let g:loaded_casechange = 1
 
 " \C - case sensitive
 " \v  -  magic mode (no need for \)
+let s:dash = '\v^[a-z0-9]+(-+[a-z0-9]+)+$' " '^[a-z0-9]+(-+[a-z0-9]+)+$'  dash-case
+let s:camel = '\v\C^[a-z][a-z0-9]*([A-Z][a-z0-9]*)*$'     " camelCase
+let s:snake = '\v\C^[a-z0-9]+(_+[a-z0-9]+)*$'           "snake_case
+let s:upper = '\v\C^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'       "UPPER_CASE
+let s:pascal = '\v\C^[A-Z][a-z0-9]*([A-Z0-9][a-z0-9]*)*$'   "PascalCase
+let s:title = '\v\C^[A-Z][a-z0-9]*( [A-Z][a-z0-9]+)*$'     "Title Case
+let s:any = '\v\C^[a-zA-Z][a-zA-Z0-9]*(( |_|-)[a-zA-Z][a-zA-Z0-9]+)*$'     "aNy_casE  Any-case etc.
+
 function! casechange#next(str)
-    let l:dash = '\v^[a-z0-9]+(-+[a-z0-9]+)+$' " '^[a-z0-9]+(-+[a-z0-9]+)+$'  dash-case
-    let l:camel = '\v\C^[a-z][a-z0-9]*([A-Z][a-z0-9]*)*$'     " camelCase
-    let l:snake = '\v\C^[a-z0-9]+(_+[a-z0-9]+)*$'           "snake_case
-    let l:upper = '\v\C^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'       "UPPER_CASE
-    let l:pascal = '\v\C^[A-Z][a-z0-9]*([A-Z0-9][a-z0-9]*)*$'   "PascalCase
-    let l:title = '\v\C^[A-Z][a-z0-9]*( [A-Z][a-z0-9]+)*$'     "Title Case
-    let l:any = '\v\C^[a-zA-Z][a-zA-Z0-9]*(( |_|-)[a-zA-Z][a-zA-Z0-9]+)*$'     "aNy_casE  Any-case etc.
-
-
-    if (a:str =~ l:dash)
+    if (a:str =~ s:dash)
         return substitute(a:str, '\v-+([a-z])', '\U\1', 'g')          "camelCase
-    elseif (a:str =~ l:camel)
+    elseif (a:str =~ s:camel)
         return substitute(a:str, '^.*$', '\u\0', 'g')                 "PascalCase
-    elseif (a:str =~ l:upper)
+    elseif (a:str =~ s:upper)
         let l:tit_under = substitute(a:str, '\v([A-Z])([A-Z]*)','\1\L\2','g')
         return substitute(l:tit_under,'_',' ','g')                        " Title Case
-    elseif (a:str =~ l:pascal)
+    elseif (a:str =~ s:pascal)
         return toupper(substitute(a:str, '\C^\@<![A-Z]', '_\0', 'g'))          "UPPER_CASE
-    elseif (a:str =~ l:title)
+    elseif (a:str =~ s:title)
         return tolower(substitute(a:str, ' ', '_', 'g'))               " snake_case
-    elseif (a:str =~ l:snake)   "snake
+    elseif (a:str =~ s:snake)   "snake
         return substitute(a:str, '_\+', '-', 'g')                      "dash-case
-    else  " (a:str =~ l:any)   - wurst case scenario
+    else  " (a:str =~ s:any)   - wurst case scenario
         return tolower(substitute(a:str, '\v( |_|-)([a-z])', '_\U\2', 'g'))          "snake_case
     endif
 endfunction
