@@ -26,6 +26,21 @@ let s:pascal = '\v\C^[A-Z][a-z0-9]*([A-Z0-9][a-z0-9]*)*$'   "PascalCase
 let s:title = '\v\C^[A-Z][a-z0-9]*( [A-Z][a-z0-9]+)*$'     "Title Case
 let s:any = '\v\C^[a-zA-Z][a-zA-Z0-9]*(( |_|-)[a-zA-Z][a-zA-Z0-9]+)*$'     "aNy_casE  Any-case etc.
 
+let s:sessionStarted = 0
+
+function! s:StartSession() abort
+    let s:sessionStarted = 1
+    autocmd au_casechange CursorMoved call s:EndSession()
+endfunction
+
+function! s:EndSession() abort
+    let s:sessionStarted = 0
+    normal <Esc>
+    augroup au_casechange
+        autocmd!
+    augroup END
+endfunction
+
 function! casechange#next(str)
     if (a:str =~ s:dash)
         return substitute(a:str, '\v-+([a-z])', '\U\1', 'g')          "camelCase
