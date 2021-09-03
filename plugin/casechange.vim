@@ -18,7 +18,8 @@ endif
 let g:loaded_casechange = 1
 
 if !exists("g:casechange_nomap")
-    vnoremap ~ "zc<C-R>=casechange#next(@z)<CR><Esc>v`[
+    vnoremap ~ <CMD>call casechange#next()<CR>
+    " vnoremap ~ "zc<C-R>=casechange#next(@z)<CR><Esc>v`[
 endif
 
 " vim:set ft=vim et sw=4 sts=4:

@@ -10,6 +10,8 @@ let s:title = '\v\C^[A-Z][a-z0-9]*( [A-Z][a-z0-9]+)*$'     "Title Case
 let s:any = '\v\C^[a-zA-Z][a-zA-Z0-9]*(( |_|-)[a-zA-Z][a-zA-Z0-9]+)*$'     "aNy_casE  Any-case etc.
 " }}}
 
+let s:sessionStarted = 0
+
 " {{{ Helpers
 function! s:DashToCamel(str) abort
     return substitute(a:str, '\v-+([a-z])', '\U\1', 'g')          "camelCase
@@ -37,29 +39,29 @@ function! s:SnakeToDash(str) abort
 endfunction
 " }}}
 
-function! s:StartSession() abort
-    echom 's:StartSession()'
-    if (!s:sessionStarted)
-        augroup au_casechange
-            autocmd!
-            autocmd CursorMoved * call s:EndSession()
-        augroup END
-    endif
-    let s:sessionStarted += 1
+function! s:GetSelectionColumns() abort
+    let pos1 = getpos('v')[2]-1
+    let pos2 = getpos('.')[2]-1
+    return { 'start': min([pos1, pos2]), 'end': max([pos1, pos2]) }
 endfunction
 
-function! s:EndSession() abort
-    echom 's:EndSession()'
-    let s:sessionStarted -= 1
-    if (!s:sessionStarted)
-        normal 
-        augroup au_casechange
-            autocmd!
-        augroup END
-    endif
+" Get visual selected text
+function! s:GetSelectionWord() abort
+    let selection = s:GetSelectionColumns()
+    return getline('.')[selection.start:selection.end]
 endfunction
 
-function! casechange#next(str)
+" Replace visual selection to argument
+function! s:GetCurrentLineWithReplacedSelection(argument)
+    let selection = s:GetSelectionColumns()
+    let line = getline('.')
+    if (selection.start == 0)
+        return a:argument.line[selection.end+1:]
+    endif
+    return line[:selection.start-1].a:argument.line[selection.end+1:]
+endfunction
+
+function! s:GetNewWord(str) abort
     if (a:str =~ s:dash)
         return s:DashToCamel(a:str)
     elseif (a:str =~ s:camel)
@@ -73,4 +75,15 @@ function! casechange#next(str)
     elseif (a:str =~ s:snake)   "snake
         return s:SnakeToDash(a:str)
     endif
+endfunction
+
+function! casechange#next() abort
+    let selectionColumns = s:GetSelectionColumns()
+    let oldWord = s:GetSelectionWord()
+    let newWord = s:GetNewWord(oldWord)
+    call setline('.', s:GetCurrentLineWithReplacedSelection(newWord))
+
+    call setpos("'<", [0, line('.'), selectionColumns.start + 1])
+    call setpos("'>", [0, line('.'), selectionColumns.start + len(newWord)])
+    normal! gv
 endfunction
