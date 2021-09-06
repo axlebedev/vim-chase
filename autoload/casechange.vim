@@ -91,9 +91,9 @@ function! s:RestoreSettings()
         autocmd!
     augroup END
 
-    echom 's:RestoreSettings()'
-    normal ^[
     let s:sessionStarted = 0
+    " exit visual mode
+    execute "normal! \<Esc>"
 endfunction
 
 function! casechange#next() abort
