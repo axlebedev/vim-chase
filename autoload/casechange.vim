@@ -77,13 +77,42 @@ function! s:GetNewWord(str) abort
     endif
 endfunction
 
+let s:count = 0
+function! s:RestoreSettings()
+    " CursorMoved is async event, so need to use a hack:
+    " run this function only 
+    " when this plugin's 'CursorMoved's have been triggered
+    if (s:count > 0)
+        let s:count -= 1
+        return
+    endif
+
+    augroup ww
+        autocmd!
+    augroup END
+
+    echom 's:RestoreSettings()'
+    normal ^[
+    let s:sessionStarted = 0
+endfunction
+
 function! casechange#next() abort
+    let s:count += 1
+    augroup ww
+        autocmd!
+        autocmd CursorMoved * call s:RestoreSettings()
+    augroup END
+
     let selectionColumns = s:GetSelectionColumns()
     let oldWord = s:GetSelectionWord()
     let newWord = s:GetNewWord(oldWord)
+    if (s:sessionStarted)
+        undojoin
+    endif
     call setline('.', s:GetCurrentLineWithReplacedSelection(newWord))
 
     call setpos("'<", [0, line('.'), selectionColumns.start + 1])
     call setpos("'>", [0, line('.'), selectionColumns.start + len(newWord)])
     normal! gv
+    let s:sessionStarted = 1
 endfunction
