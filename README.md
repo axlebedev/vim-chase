@@ -1,4 +1,4 @@
-This fork add support for: `aNy-CasE` or `Any cAse` - always converted to snake_case
+> This fork add support for: `aNy-CasE` or `Any cAse` - always converted to snake_case  
 Also I added support for new: `Title Case`  
 
 <video controls="true" allowfullscreen="true" poster="path/to/poster_image.png">
