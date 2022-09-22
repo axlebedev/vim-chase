@@ -17,6 +17,7 @@ endif
 let g:loaded_casechange = 1
 
 if !exists("g:casechange_nomap")
+    nnoremap ~ <CMD>call casechange#next()<CR>
     vnoremap ~ <CMD>call casechange#next()<CR>
     vnoremap ! <CMD>call casechange#prev()<CR>
 endif

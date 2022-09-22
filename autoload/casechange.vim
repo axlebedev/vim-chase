@@ -9,7 +9,7 @@
 " 5. + undojoin
 " 6.   Аббривеатуры, типа 'NDALabel'
 " 7. + Сбросить visual mode на CursorMoved
-" 8.   Старт из normal mode, поиск слова на котором стоит курсор (вкл. символ -)
+" 8. + Старт из normal mode, поиск слова на котором стоит курсор (вкл. символ -)
 
 function! s:GetSelectionColumns() abort
     let pos1 = getpos('v')[2]-1
@@ -19,6 +19,12 @@ endfunction
 
 " Get visual selected text
 function! s:GetSelectionWord() abort
+    if (mode() == 'n')
+        let s:savedIskeyword = &iskeyword
+        set iskeyword+=-
+        normal! viw
+        let &iskeyword = s:savedIskeyword
+    endif
     let selection = s:GetSelectionColumns()
     return getline('.')[selection.start:selection.end]
 endfunction
@@ -59,8 +65,8 @@ function! s:ReplaceWithNext(isPrev) abort
     call timer_stopall()
     call s:ResetAugroup()
 
-    let selectionColumns = s:GetSelectionColumns()
     let oldWord = s:GetSelectionWord()
+    let selectionColumns = s:GetSelectionColumns()
     let newWord = regex#GetNextWord(oldWord, a:isPrev)
     if (s:sessionStarted)
         undojoin | call setline('.', s:GetCurrentLineWithReplacedSelection(newWord))
