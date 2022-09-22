@@ -2,6 +2,14 @@
 " \C - case sensitive
 " \v  -  magic mode (no need for \)
 " }}}
+" 1. + Проверить что работает как надо
+" 2.   Конфиг последовательности
+" 3.   Подсветка при casechange#next
+" 4.   Сделать casechange#prev
+" 5. + undojoin
+" 6.   Аббривеатуры, типа 'NDALabel'
+" 7. + Сбросить visual mode на CursorMoved
+" 8.   Старт из normal mode, поиск слова на котором стоит курсор (вкл. символ -)
 
 let s:groups = {
     \ 'undefined': 'group-undefined',
@@ -26,10 +34,10 @@ let s:sentenceTitle = '\v\C^[A-Z][a-z0-9]*( [A-Z][a-z0-9]+)+$'
 
 let s:sentenceCasesOrder = [
   \ s:sentenceDash,
-  \ s:sentenceCamel,
   \ s:sentenceSnake,
-  \ s:sentenceUpper,
+  \ s:sentenceCamel,
   \ s:sentencePascal,
+  \ s:sentenceUpper,
   \ s:sentenceTitle,
   \ ]
 
@@ -56,27 +64,27 @@ let s:letterUpper = '\v\C^[A-Z]$'
 let s:sessionStarted = 0
 
 function! s:GetWordRegex(word) abort
-    if (a:word =~ s:letterLower)
+    if (a:word =~# s:letterLower)
         return { 'regex': s:letterLower, 'group': s:groups.letter }
-    elseif (a:word =~ s:letterUpper)
+    elseif (a:word =~# s:letterUpper)
         return { 'regex': s:letterUpper, 'group': s:groups.letter }
-    elseif (a:word =~ s:wordUpper)
+    elseif (a:word =~# s:wordUpper)
         return { 'regex': s:wordUpper, 'group': s:groups.word }
-    elseif (a:word =~ s:wordLower)
+    elseif (a:word =~# s:wordLower)
         return { 'regex': s:wordLower, 'group': s:groups.word }
-    elseif (a:word =~ s:wordTitle)
+    elseif (a:word =~# s:wordTitle)
         return { 'regex': s:wordTitle, 'group': s:groups.word }
-    elseif (a:word =~ s:sentenceUpper)
+    elseif (a:word =~# s:sentenceUpper)
         return { 'regex': s:sentenceUpper, 'group': s:groups.sentence }
-    elseif (a:word =~ s:sentenceSnake)
+    elseif (a:word =~# s:sentenceSnake)
         return { 'regex': s:sentenceSnake, 'group': s:groups.sentence }
-    elseif (a:word =~ s:sentenceDash)
+    elseif (a:word =~# s:sentenceDash)
         return { 'regex': s:sentenceDash, 'group': s:groups.sentence }
-    elseif (a:word =~ s:sentenceTitle)
+    elseif (a:word =~# s:sentenceTitle)
         return { 'regex': s:sentenceTitle, 'group': s:groups.sentence }
-    elseif (a:word =~ s:sentencePascal)
+    elseif (a:word =~# s:sentencePascal)
         return { 'regex': s:sentencePascal, 'group': s:groups.sentence }
-    elseif (a:word =~ s:sentenceCamel)
+    elseif (a:word =~# s:sentenceCamel)
         return { 'regex': s:sentenceCamel, 'group': s:groups.sentence }
     endif
     return { 'regex': '', 'group': s:groups.undefined }
@@ -85,7 +93,7 @@ endfunction
 " Normalize string: any case -> to dash case (lower)
 function! s:ToDash(word, currentRegex) abort
     " camelCase, pascalCase
-    if (a:currentRegex == s:sentenceCamel || a:currentRegex == s:sentencePascal)
+    if (a:currentRegex ==# s:sentenceCamel || a:currentRegex ==# s:sentencePascal)
         return a:word->substitute('\C^\@<![A-Z]', '-\0', 'g')->tolower()
     endif
 
@@ -94,22 +102,22 @@ function! s:ToDash(word, currentRegex) abort
 endfunction
 
 function! s:DashToNext(word, group, oldRegex) abort
-    if (a:group == s:groups.letter)
-        if (a:oldRegex === s:letterLower)
+    if (a:group ==# s:groups.letter)
+        if (a:oldRegex ==# s:letterLower)
             return a:word->toupper()
         else
             return a:word->tolower()
         endif
     endif
 
-    if (a:group == s:groups.word)
+    if (a:group ==# s:groups.word)
         " any -> lower ->  title -> upper -> lower
         let nextCaseIndex = (s:wordCasesOrder->index(a:oldRegex) + 1) % s:wordCasesOrder->len()
         let nextCase = s:wordCasesOrder[nextCaseIndex]
 
-        if (nextCase == s:wordLower)
+        if (nextCase ==# s:wordLower)
             return a:word->tolower()
-        elseif (nextCase == s:wordUpper)
+        elseif (nextCase ==# s:wordUpper)
             return a:word->toupper()
         else
             return a:word->tolower()->substitute('^[a-z]', '\u\0', 'g')
@@ -119,17 +127,17 @@ function! s:DashToNext(word, group, oldRegex) abort
     let nextCaseIndex = (s:sentenceCasesOrder->index(a:oldRegex) + 1) % s:sentenceCasesOrder->len()
     let nextCase = s:sentenceCasesOrder[nextCaseIndex]
 
-    if (nextCase == s:sentenceDash)
+    if (nextCase ==# s:sentenceDash)
         return a:word
-    elseif (nextCase == s:sentenceCamel)
+    elseif (nextCase ==# s:sentenceCamel)
         return a:word->substitute('\v\-([a-z])', '\u\1', 'g')
-    elseif (nextCase == s:sentenceSnake)
+    elseif (nextCase ==# s:sentenceSnake)
         return a:word->substitute('-', '_', 'g')
-    elseif (nextCase == s:sentenceUpper)
+    elseif (nextCase ==# s:sentenceUpper)
         return a:word->substitute('-', '_', 'g')->toupper()
-    elseif (nextCase == s:sentencePascal)
+    elseif (nextCase ==# s:sentencePascal)
         return a:word->substitute('\v\-([a-z])', '\u\1', 'g')->substitute('\v^([a-z])', '\u\1', '')
-    elseif (nextCase == s:sentenceTitle)
+    elseif (nextCase ==# s:sentenceTitle)
         return a:word->substitute('\v\-([a-z])', ' \u\1', 'g')->substitute('\v^([a-z])', '\u\1', '')
     endif
 
@@ -149,7 +157,7 @@ function! s:GetSelectionWord() abort
 endfunction
 
 " Replace visual selection to argument
-function! s:GetCurrentLineWithReplacedSelection(argument)
+function! s:GetCurrentLineWithReplacedSelection(argument) abort
     let selection = s:GetSelectionColumns()
     let line = getline('.')
     if (selection.start == 0)
@@ -158,111 +166,46 @@ function! s:GetCurrentLineWithReplacedSelection(argument)
     return line[:selection.start-1].a:argument.line[selection.end+1:]
 endfunction
 
+function! s:ResetAugroup() abort
+    augroup au_vimcasechange
+        autocmd!
+    augroup END
+endfunction
+
+function! s:SetAugroup() abort
+    augroup au_vimcasechange
+        autocmd!
+        autocmd CursorMoved * call s:OnCursorMoved()
+    augroup END
+endfunction
+
+let s:sessionStarted = 0
+function! s:OnCursorMoved() abort
+    call s:ResetAugroup()
+    let s:sessionStarted = 0
+
+    " exit visual mode
+    execute "normal! \<Esc>"
+endfunction
+
 function! casechange#next() abort
-    " let s:count += 1
-    " augroup ww
-    "     autocmd!
-    "     autocmd CursorMoved * call s:RestoreSettings()
-    " augroup END
+    call timer_stopall()
+    call s:ResetAugroup()
 
     let selectionColumns = s:GetSelectionColumns()
     let oldWord = s:GetSelectionWord()
     let oldRegex = s:GetWordRegex(oldWord)
-    " echom 'oldWord="'.oldWord.'" '.string(oldRegex)
     let dashWord = s:ToDash(oldWord, oldRegex.regex)
-    echom 'dashWord="'.dashWord.'"'
     let newWord = s:DashToNext(dashWord, oldRegex.group, oldRegex.regex)
-    " echom 'newWord="'.newWord.'"'
-    " if (s:sessionStarted)
-    "     undojoin
-    " endif
-    call setline('.', s:GetCurrentLineWithReplacedSelection(newWord))
+    if (s:sessionStarted)
+        undojoin | call setline('.', s:GetCurrentLineWithReplacedSelection(newWord))
+    else
+        call setline('.', s:GetCurrentLineWithReplacedSelection(newWord))
+    endif
 
     call setpos("'<", [0, line('.'), selectionColumns.start + 1])
     call setpos("'>", [0, line('.'), selectionColumns.start + len(newWord)])
     normal! gv
-    " let s:sessionStarted = 1
+    let s:sessionStarted = 1
+    call timer_start(100, { -> s:SetAugroup() })
 endfunction
-
-" " {{{ Helpers
-" function! s:DashToCamel(str) abort
-"     return substitute(a:str, '\v-+([a-z])', '\U\1', 'g')          "camelCase
-" endfunction
-"
-" function! s:CamelToPascal(str) abort
-"     return substitute(a:str, '^.*$', '\u\0', 'g')                 "PascalCase
-" endfunction
-"
-" function! s:PascalToUpper(str) abort
-"     return toupper(substitute(a:str, '\C^\@<![A-Z]', '_\0', 'g'))          "UPPER_CASE
-" endfunction
-"
-" function! s:UpperToTitle(str) abort
-"     let l:tit_under = substitute(a:str, '\v([A-Z])([A-Z]*)','\1\L\2','g')
-"     return substitute(l:tit_under,'_',' ','g')                        " Title Case
-" endfunction
-"
-" function! s:TitleToSnake(str) abort
-"     return tolower(substitute(a:str, ' ', '_', 'g'))               " snake_case
-" endfunction
-"
-" function! s:SnakeToDash(str) abort
-"     return substitute(a:str, '_\+', '-', 'g')                      "dash-case
-" endfunction
-" " }}}
-"
-" function! s:GetNewWord(str) abort
-"     if (a:str =~ s:dash)
-"         return s:DashToCamel(a:str)
-"     elseif (a:str =~ s:camel)
-"         return s:CamelToPascal(a:str)
-"     elseif (a:str =~ s:pascal)
-"         return s:PascalToUpper(a:str)
-"     elseif (a:str =~ s:upper)
-"         return s:UpperToTitle(a:str)
-"     elseif (a:str =~ s:title)
-"         return s:TitleToSnake(a:str)
-"     elseif (a:str =~ s:snake)   "snake
-"         return s:SnakeToDash(a:str)
-"     endif
-" endfunction
-"
-" let s:count = 0
-" function! s:RestoreSettings()
-"     " CursorMoved is async event, so need to use a hack:
-"     " run this function only 
-"     " when this plugin's 'CursorMoved's have been triggered
-"     if (s:count > 0)
-"         let s:count -= 1
-"         return
-"     endif
-"
-"     augroup ww
-"         autocmd!
-"     augroup END
-"
-"     let s:sessionStarted = 0
-"     " exit visual mode
-"     execute "normal! \<Esc>"
-" endfunction
-"
-" function! casechange#next() abort
-"     let s:count += 1
-"     augroup ww
-"         autocmd!
-"         autocmd CursorMoved * call s:RestoreSettings()
-"     augroup END
-"
-"     let selectionColumns = s:GetSelectionColumns()
-"     let oldWord = s:GetSelectionWord()
-"     let newWord = s:GetNewWord(oldWord)
-"     if (s:sessionStarted)
-"         undojoin
-"     endif
-"     call setline('.', s:GetCurrentLineWithReplacedSelection(newWord))
-"
-"     call setpos("'<", [0, line('.'), selectionColumns.start + 1])
-"     call setpos("'>", [0, line('.'), selectionColumns.start + len(newWord)])
-"     normal! gv
-"     let s:sessionStarted = 1
-" endfunction
