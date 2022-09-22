@@ -5,7 +5,7 @@
 " 1. + Проверить что работает как надо
 " 2.   Конфиг последовательности
 " 3.   Подсветка при casechange#next
-" 4.   Сделать casechange#prev
+" 4. + Сделать casechange#prev
 " 5. + undojoin
 " 6.   Аббривеатуры, типа 'NDALabel'
 " 7. + Сбросить visual mode на CursorMoved
@@ -55,13 +55,13 @@ function! s:OnCursorMoved() abort
     execute "normal! \<Esc>"
 endfunction
 
-function! casechange#next() abort
+function! s:ReplaceWithNext(isPrev) abort
     call timer_stopall()
     call s:ResetAugroup()
 
     let selectionColumns = s:GetSelectionColumns()
     let oldWord = s:GetSelectionWord()
-    let newWord = regex#GetNextWord(oldWord)
+    let newWord = regex#GetNextWord(oldWord, a:isPrev)
     if (s:sessionStarted)
         undojoin | call setline('.', s:GetCurrentLineWithReplacedSelection(newWord))
     else
@@ -73,4 +73,12 @@ function! casechange#next() abort
     normal! gv
     let s:sessionStarted = 1
     call timer_start(100, { -> s:SetAugroup() })
+endfunction
+
+function! casechange#next() abort
+    call s:ReplaceWithNext(0)
+endfunction
+
+function! casechange#prev() abort
+    call s:ReplaceWithNext(1)
 endfunction

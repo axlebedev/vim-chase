@@ -86,7 +86,7 @@ function! s:ToDash(word, currentRegex) abort
     return a:word->substitute('\C[^a-zA-Z0-9]', '-', 'g')->tolower()
 endfunction
 
-function! s:DashToNext(word, group, oldRegex) abort
+function! s:DashToNext(word, group, oldRegex, isPrev) abort
     if (a:group ==# s:groups.letter)
         if (a:oldRegex ==# s:letterLower)
             return a:word->toupper()
@@ -95,9 +95,10 @@ function! s:DashToNext(word, group, oldRegex) abort
         endif
     endif
 
+    let d = a:isPrev ? -1 : 1
     if (a:group ==# s:groups.word)
         " any -> lower ->  title -> upper -> lower
-        let nextCaseIndex = (s:wordCasesOrder->index(a:oldRegex) + 1) % s:wordCasesOrder->len()
+        let nextCaseIndex = (s:wordCasesOrder->index(a:oldRegex) + d) % s:wordCasesOrder->len()
         let nextCase = s:wordCasesOrder[nextCaseIndex]
 
         if (nextCase ==# s:wordLower)
@@ -109,7 +110,7 @@ function! s:DashToNext(word, group, oldRegex) abort
         endif
     endif
 
-    let nextCaseIndex = (s:sentenceCasesOrder->index(a:oldRegex) + 1) % s:sentenceCasesOrder->len()
+    let nextCaseIndex = (s:sentenceCasesOrder->index(a:oldRegex) + d) % s:sentenceCasesOrder->len()
     let nextCase = s:sentenceCasesOrder[nextCaseIndex]
 
     if (nextCase ==# s:sentenceDash)
@@ -129,9 +130,9 @@ function! s:DashToNext(word, group, oldRegex) abort
     return a:word
 endfunction
 
-function! regex#GetNextWord(oldWord) abort
+function! regex#GetNextWord(oldWord, isPrev) abort
     let oldRegex = s:GetWordRegex(a:oldWord)
     let dashWord = s:ToDash(a:oldWord, oldRegex.regex)
-    let newWord = s:DashToNext(dashWord, oldRegex.group, oldRegex.regex)
+    let newWord = s:DashToNext(dashWord, oldRegex.group, oldRegex.regex, a:isPrev)
     return newWord
 endfunction

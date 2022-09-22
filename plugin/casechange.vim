@@ -18,6 +18,7 @@ let g:loaded_casechange = 1
 
 if !exists("g:casechange_nomap")
     vnoremap ~ <CMD>call casechange#next()<CR>
+    vnoremap ! <CMD>call casechange#prev()<CR>
 endif
 
 " vim:set ft=vim et sw=4 sts=4:
