@@ -14,7 +14,6 @@ function! s:GetSeparatorIndexes(word) abort
 endfunction
 
 function! s:GetChangedIndexes(oldWord, newWord) abort
-    " echom 'GetChangedIndexes('.a:oldWord.', '.a:newWord.')'
     if (a:oldWord->len() != a:newWord->len())
         return []
     endif
@@ -22,11 +21,13 @@ function! s:GetChangedIndexes(oldWord, newWord) abort
     let res = []
     let i = 0
     while (i < a:oldWord->len())
+        " echom a:oldWord[i].' !=# '.a:newWord[i].'='.(a:oldWord[i] !=# a:newWord[i])
         if (a:oldWord[i] !=# a:newWord[i])
             call add(res, i)
         endif
         let i += 1
     endwhile
+    " echom 'GetChangedIndexes('.a:oldWord.', '.a:newWord.') res='.string(res)
     return res
 endfunction
 
@@ -78,7 +79,27 @@ function! s:GetIndexesToHighlight(oldWord, newWord) abort
       \ }
 endfunction
 
+let s:matchIds = []
 function! highlightdiff#HighlightDiff(oldWord, newWord) abort
-    echom 'highlightdiff#HighlightDiff('.a:oldWord.', '.a:newWord.')'
-    echom s:GetIndexesToHighlight(a:oldWord, a:newWord)
+    let indexes = s:GetIndexesToHighlight(a:oldWord, a:newWord)
+
+    highlight Separator guibg=#FF9999 ctermbg=NONE
+    highlight Changed guibg=#99FF99 ctermbg=NONE
+
+    let curline = line('.')
+    let startOfWord = getpos("'<")[2]
+    for i in indexes.changedLetters
+        call add(s:matchIds, matchadd('Changed', '\%'.curline.'l\%'.(i + startOfWord).'c'))
+    endfor
+    for i in indexes.separator
+        call add(s:matchIds, matchadd('Separator', '\%'.curline.'l\%'.(i + startOfWord).'c'))
+    endfor
+
+    func! MyHandler(timer)
+        for id in s:matchIds
+            call matchdelete(id)
+        endfor
+        let s:matchIds = []
+    endfunc
+    let timer = timer_start(1000, 'MyHandler')
 endfunction

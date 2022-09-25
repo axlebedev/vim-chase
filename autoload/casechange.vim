@@ -73,7 +73,6 @@ function! s:ReplaceWithNext(isPrev) abort
     let oldWord = s:GetSelectionWord()
     let selectionColumns = s:GetSelectionColumns()
     let newWord = regex#GetNextWord(oldWord, a:isPrev)
-    call highlightdiff#HighlightDiff(oldWord, newWord)
     if (s:sessionStarted)
         undojoin | call setline('.', s:GetCurrentLineWithReplacedSelection(newWord))
     else
@@ -82,9 +81,15 @@ function! s:ReplaceWithNext(isPrev) abort
 
     call setpos("'<", [0, line('.'), selectionColumns.start + 1])
     call setpos("'>", [0, line('.'), selectionColumns.start + len(newWord)])
-    normal! gv
+    " normal! gv
+    execute "normal! \<Esc>"
     let s:sessionStarted = 1
     call timer_start(100, { -> s:SetAugroup() })
+    call highlightdiff#HighlightDiff(oldWord, newWord)
+    func! GV(a) abort
+        normal! gv
+    endfunc
+    call timer_start(1000, function('GV'))
 endfunction
 
 function! casechange#next() abort
