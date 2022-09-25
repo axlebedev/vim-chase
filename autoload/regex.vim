@@ -55,9 +55,16 @@ let s:letterUpper = '\v\C^[A-Z]$'
 
 let s:caseDict = {
   \ 'dash': s:sentenceDash,
-  \ 'camel': s:sentenceCamel,
+  \ 'kebab': s:sentenceDash,
+  \ 'hyphen': s:sentenceDash,
+  \
   \ 'snake': s:sentenceSnake,
+  \ 'lower_underscore': s:sentenceSnake,
+  \
   \ 'upper': s:sentenceUpper,
+  \ 'upper_underscore': s:sentenceUpper,
+  \
+  \ 'camel': s:sentenceCamel,
   \ 'pascal': s:sentencePascal,
   \ 'title': s:sentenceTitle,
   \ 'wordUpper': s:wordUpper,
@@ -144,10 +151,10 @@ function! s:DashToNext(word, group, oldRegex, isPrev) abort
         return a:word->substitute('-', '_', 'g')
     elseif (nextCase ==# s:sentenceUpper)
         return a:word->substitute('-', '_', 'g')->toupper()
-    elseif (nextCase ==# s:wordTitle
-      \ || nextCase ==# s:sentencePascal)
+    elseif (nextCase ==# s:sentencePascal)
         return a:word->substitute('\v\-([a-z])', '\u\1', 'g')->substitute('\v^([a-z])', '\u\1', '')
-    elseif (nextCase ==# s:sentenceTitle)
+    elseif (nextCase ==# s:wordTitle
+      \ || nextCase ==# s:sentenceTitle)
         return a:word->substitute('\v\-([a-z])', ' \u\1', 'g')->substitute('\v^([a-z])', '\u\1', '')
     endif
 
