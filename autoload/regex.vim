@@ -1,22 +1,3 @@
-let s:sentenceCasesOrder = get(g:, 'caseChangeSentenceCasesOrder', [
-  \ 'dash',
-  \ 'snake',
-  \ 'camel',
-  \ 'pascal',
-  \ 'upper',
-  \ 'title',
-  \ ])
-
-let s:wordCasesOrder = get(g:, 'caseChangeWordCasesOrder', [
-  \ 'wordUpper',
-  \ 'wordLower',
-  \ 'wordTitle',
-  \ ])
-
-let s:letterCasesOrder = get(g:, 'caseChangeLetterCasesOrder', [
-  \ 'letterUpper',
-  \ 'letterLower',
-  \ ])
 
 let s:groups = {
     \ 'undefined': 'group-undefined',
@@ -81,12 +62,12 @@ endfunction
 
 function! s:MakeCasesOrderRegexArrayByGroup(group) abort
     if (a:group == s:groups.letter)
-        return s:MakeCasesOrderRegexArray(s:letterCasesOrder)
+        return s:MakeCasesOrderRegexArray(g:letterCasesOrder)
     endif
     if (a:group == s:groups.word)
-        return s:MakeCasesOrderRegexArray(s:wordCasesOrder)
+        return s:MakeCasesOrderRegexArray(g:wordCasesOrder)
     endif
-        return s:MakeCasesOrderRegexArray(s:sentenceCasesOrder)
+        return s:MakeCasesOrderRegexArray(g:sentenceCasesOrder)
 endfunction
 
 function! s:GetWordRegex(word) abort

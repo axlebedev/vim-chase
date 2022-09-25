@@ -16,6 +16,27 @@ if exists("g:loaded_casechange") || &cp || v:version < 700
 endif
 let g:loaded_casechange = 1
 
+
+let g:sentenceCasesOrder = get(g:, 'caseChangeSentenceCasesOrder', [
+  \ 'dash',
+  \ 'snake',
+  \ 'camel',
+  \ 'pascal',
+  \ 'upper',
+  \ 'title',
+  \ ])
+
+let g:wordCasesOrder = get(g:, 'caseChangeWordCasesOrder', [
+  \ 'wordUpper',
+  \ 'wordLower',
+  \ 'wordTitle',
+  \ ])
+
+let g:letterCasesOrder = get(g:, 'caseChangeLetterCasesOrder', [
+  \ 'letterUpper',
+  \ 'letterLower',
+  \ ])
+
 if !exists("g:casechange_nomap")
     nnoremap ~ <CMD>call casechange#next()<CR>
     vnoremap ~ <CMD>call casechange#next()<CR>
