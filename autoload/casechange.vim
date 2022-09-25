@@ -66,6 +66,7 @@ function! s:OnCursorMoved() abort
     execute "normal! \<Esc>"
 endfunction
 
+let s:savedVisualSelection = { 'start': 0, 'end': 0 }
 function! s:ReplaceWithNext(isPrev) abort
     call timer_stopall()
     call s:ResetAugroup()
@@ -73,20 +74,25 @@ function! s:ReplaceWithNext(isPrev) abort
     let oldWord = s:GetSelectionWord()
     let selectionColumns = s:GetSelectionColumns()
     let newWord = regex#GetNextWord(oldWord, a:isPrev)
+
+    let s:savedVisualSelection = { 'start': selectionColumns.start + 1, 'end': selectionColumns.start + len(newWord) }
     if (s:sessionStarted)
         undojoin | call setline('.', s:GetCurrentLineWithReplacedSelection(newWord))
     else
         call setline('.', s:GetCurrentLineWithReplacedSelection(newWord))
     endif
 
-    call setpos("'<", [0, line('.'), selectionColumns.start + 1])
-    call setpos("'>", [0, line('.'), selectionColumns.start + len(newWord)])
+    call setpos("'<", [0, line('.'), s:savedVisualSelection.start])
+    call setpos("'>", [0, line('.'), s:savedVisualSelection.end])
     " normal! gv
     execute "normal! \<Esc>"
     let s:sessionStarted = 1
     call timer_start(100, { -> s:SetAugroup() })
     call highlightdiff#HighlightDiff(oldWord, newWord)
     func! GV(a) abort
+        call setpos(".", [0, line('.'), s:savedVisualSelection.start])
+        call setpos("'<", [0, line('.'), s:savedVisualSelection.start])
+        call setpos("'>", [0, line('.'), s:savedVisualSelection.end])
         normal! gv
     endfunc
     call timer_start(1000, function('GV'))
