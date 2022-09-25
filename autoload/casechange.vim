@@ -44,28 +44,6 @@ function! s:GetCurrentLineWithReplacedSelection(argument) abort
     return line[:selection.start-1].a:argument.line[selection.end+1:]
 endfunction
 
-function! s:ResetAugroup() abort
-    augroup au_vimcasechange
-        autocmd!
-    augroup END
-endfunction
-
-function! s:SetAugroup() abort
-    augroup au_vimcasechange
-        autocmd!
-        autocmd CursorMoved * call s:OnCursorMoved()
-    augroup END
-endfunction
-
-let s:sessionStarted = 0
-function! s:OnCursorMoved() abort
-    call s:ResetAugroup()
-    let s:sessionStarted = 0
-
-    " exit visual mode
-    execute "normal! \<Esc>"
-endfunction
-
 let s:savedVisualSelection = { 'start': 0, 'end': 0 }
 let s:gvTimer = 0
 function! GV(...) abort
@@ -75,36 +53,26 @@ function! GV(...) abort
     let s:gvTimer = 0
 endfunc
 
-let s:augroupTimer = 0
 function! s:ReplaceWithNext(isPrev) abort
-    if (s:sessionStarted == 1)
-        normal! gv
-    endif
-    call timer_stop(s:augroupTimer)
     if (s:gvTimer)
         call timer_stop(s:gvTimer)
         call GV()
     endif
 
-    call s:ResetAugroup()
+    " NOTE: undojoin also here
+    call sessioncontroller#SessionController()
 
     let oldWord = s:GetSelectionWord()
     let selectionColumns = s:GetSelectionColumns()
     let newWord = regex#GetNextWord(oldWord, a:isPrev)
 
     let s:savedVisualSelection = { 'start': selectionColumns.start + 1, 'end': selectionColumns.start + len(newWord) }
-    if (s:sessionStarted)
-        undojoin | call setline('.', s:GetCurrentLineWithReplacedSelection(newWord))
-    else
         call setline('.', s:GetCurrentLineWithReplacedSelection(newWord))
-    endif
 
     call setpos("'<", [0, line('.'), s:savedVisualSelection.start])
     call setpos("'>", [0, line('.'), s:savedVisualSelection.end])
-    " normal! gv
+    call setpos(".", [0, line('.'), s:savedVisualSelection.end])
     execute "normal! \<Esc>"
-    let s:sessionStarted = 1
-    let s:augroupTimer = timer_start(100, { -> s:SetAugroup() })
     call highlightdiff#HighlightDiff(oldWord, newWord)
     let s:gvTimer = timer_start(g:highlightTimeout, function('GV'))
 endfunction
