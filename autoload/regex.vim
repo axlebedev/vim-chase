@@ -86,34 +86,36 @@ function! s:ToDash(word, currentRegex) abort
     return a:word->substitute('\C[^a-zA-Z0-9]', '-', 'g')->tolower()
 endfunction
 
-function! s:DashToNext(word, group, oldRegex, isPrev) abort
+function! s:GetNextCase(group, oldRegex, isPrev) abort
+    echom 'group='.a:group.' oldRegex='.a:oldRegex
     if (a:group ==# s:groups.letter)
         if (a:oldRegex ==# s:letterLower)
-            return a:word->toupper()
-        else
-            return a:word->tolower()
+            return s:letterUpper
         endif
+        return s:letterLower
     endif
 
     let d = a:isPrev ? -1 : 1
     if (a:group ==# s:groups.word)
-        " any -> lower ->  title -> upper -> lower
         let nextCaseIndex = (s:wordCasesOrder->index(a:oldRegex) + d) % s:wordCasesOrder->len()
         let nextCase = s:wordCasesOrder[nextCaseIndex]
-
-        if (nextCase ==# s:wordLower)
-            return a:word->tolower()
-        elseif (nextCase ==# s:wordUpper)
-            return a:word->toupper()
-        else
-            return a:word->tolower()->substitute('^[a-z]', '\u\0', 'g')
-        endif
+        return nextCase
     endif
 
     let nextCaseIndex = (s:sentenceCasesOrder->index(a:oldRegex) + d) % s:sentenceCasesOrder->len()
     let nextCase = s:sentenceCasesOrder[nextCaseIndex]
+    return nextCase
+endfunction
 
-    if (nextCase ==# s:sentenceDash)
+function! s:DashToNext(word, group, oldRegex, isPrev) abort
+    let nextCase = s:GetNextCase(a:group, a:oldRegex, a:isPrev)
+    if (nextCase ==# s:letterUpper
+      \ || nextCase ==# s:wordUpper)
+        return a:word->toupper()
+    elseif (nextCase ==# s:letterLower 
+      \ || nextCase ==# s:wordLower)
+        return a:word->tolower()
+    elseif (nextCase ==# s:sentenceDash)
         return a:word
     elseif (nextCase ==# s:sentenceCamel)
         return a:word->substitute('\v\-([a-z])', '\u\1', 'g')
@@ -121,7 +123,8 @@ function! s:DashToNext(word, group, oldRegex, isPrev) abort
         return a:word->substitute('-', '_', 'g')
     elseif (nextCase ==# s:sentenceUpper)
         return a:word->substitute('-', '_', 'g')->toupper()
-    elseif (nextCase ==# s:sentencePascal)
+    elseif (nextCase ==# s:wordTitle
+      \ || nextCase ==# s:sentencePascal)
         return a:word->substitute('\v\-([a-z])', '\u\1', 'g')->substitute('\v^([a-z])', '\u\1', '')
     elseif (nextCase ==# s:sentenceTitle)
         return a:word->substitute('\v\-([a-z])', ' \u\1', 'g')->substitute('\v^([a-z])', '\u\1', '')
