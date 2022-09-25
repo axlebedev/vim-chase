@@ -1,3 +1,23 @@
+let s:sentenceCasesOrder = get(g:, 'caseChangeSentenceCasesOrder', [
+  \ 'dash',
+  \ 'snake',
+  \ 'camel',
+  \ 'pascal',
+  \ 'upper',
+  \ 'title',
+  \ ])
+
+let s:wordCasesOrder = get(g:, 'caseChangeWordCasesOrder', [
+  \ 'wordUpper',
+  \ 'wordLower',
+  \ 'wordTitle',
+  \ ])
+
+let s:letterCasesOrder = get(g:, 'caseChangeLetterCasesOrder', [
+  \ 'letterUpper',
+  \ 'letterLower',
+  \ ])
+
 let s:groups = {
     \ 'undefined': 'group-undefined',
     \ 'letter': 'group-letter',
@@ -19,15 +39,6 @@ let s:sentencePascal = '\v\C^[A-Z][a-z0-9]*([A-Z0-9][a-z0-9]+)+$'
 " title    Any Word
 let s:sentenceTitle = '\v\C^[A-Z][a-z0-9]*( [A-Z][a-z0-9]+)+$'
 
-let s:sentenceCasesOrder = [
-  \ s:sentenceDash,
-  \ s:sentenceSnake,
-  \ s:sentenceCamel,
-  \ s:sentencePascal,
-  \ s:sentenceUpper,
-  \ s:sentenceTitle,
-  \ ]
-
 " -- single word, 2 or more letters
 " lower    word
 let s:wordLower = '\v\C^[a-z0-9]+$'
@@ -36,17 +47,40 @@ let s:wordUpper = '\v\C^[A-Z0-9]+$'
 " title    Word
 let s:wordTitle = '\v\C^[A-Z][a-z0-9]+$'
 
-let s:wordCasesOrder = [
-  \ s:wordUpper,
-  \ s:wordLower,
-  \ s:wordTitle,
-  \ ]
-
 " -- single letter
 " lower    w
 let s:letterLower = '\v\C^[a-z]$'
 " upper    W
 let s:letterUpper = '\v\C^[A-Z]$'
+
+let s:caseDict = {
+  \ 'dash': s:sentenceDash,
+  \ 'camel': s:sentenceCamel,
+  \ 'snake': s:sentenceSnake,
+  \ 'upper': s:sentenceUpper,
+  \ 'pascal': s:sentencePascal,
+  \ 'title': s:sentenceTitle,
+  \ 'wordUpper': s:wordUpper,
+  \ 'wordLower': s:wordLower,
+  \ 'wordTitle': s:wordTitle,
+  \ 'letterUpper': s:letterUpper,
+  \ 'letterLower': s:letterLower,
+  \ }
+
+function! s:MakeCasesOrderRegexArray(casesOrderNamesArray) abort
+    return copy(a:casesOrderNamesArray)
+      \ ->map({_, name -> s:caseDict[name]})
+endfunction
+
+function! s:MakeCasesOrderRegexArrayByGroup(group) abort
+    if (a:group == s:groups.letter)
+        return s:MakeCasesOrderRegexArray(s:letterCasesOrder)
+    endif
+    if (a:group == s:groups.word)
+        return s:MakeCasesOrderRegexArray(s:wordCasesOrder)
+    endif
+        return s:MakeCasesOrderRegexArray(s:sentenceCasesOrder)
+endfunction
 
 function! s:GetWordRegex(word) abort
     if (a:word =~# s:letterLower)
@@ -87,23 +121,10 @@ function! s:ToDash(word, currentRegex) abort
 endfunction
 
 function! s:GetNextCase(group, oldRegex, isPrev) abort
-    echom 'group='.a:group.' oldRegex='.a:oldRegex
-    if (a:group ==# s:groups.letter)
-        if (a:oldRegex ==# s:letterLower)
-            return s:letterUpper
-        endif
-        return s:letterLower
-    endif
-
+    let regexArray = s:MakeCasesOrderRegexArrayByGroup(a:group)
     let d = a:isPrev ? -1 : 1
-    if (a:group ==# s:groups.word)
-        let nextCaseIndex = (s:wordCasesOrder->index(a:oldRegex) + d) % s:wordCasesOrder->len()
-        let nextCase = s:wordCasesOrder[nextCaseIndex]
-        return nextCase
-    endif
-
-    let nextCaseIndex = (s:sentenceCasesOrder->index(a:oldRegex) + d) % s:sentenceCasesOrder->len()
-    let nextCase = s:sentenceCasesOrder[nextCaseIndex]
+    let nextCaseIndex = (regexArray->index(a:oldRegex) + d) % regexArray->len()
+    let nextCase = regexArray[nextCaseIndex]
     return nextCase
 endfunction
 
