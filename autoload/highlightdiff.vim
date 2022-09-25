@@ -80,14 +80,26 @@ function! s:GetIndexesToHighlight(oldWord, newWord) abort
 endfunction
 
 let s:matchIds = []
+function! highlightdiff#ClearHighlights(...) abort
+        for id in s:matchIds
+            call matchdelete(id)
+        endfor
+        let s:matchIds = []
+endfunction
+
+let s:timer = 0
 function! highlightdiff#HighlightDiff(oldWord, newWord) abort
+    call timer_stop(s:timer)
     let indexes = s:GetIndexesToHighlight(a:oldWord, a:newWord)
 
-    highlight Separator guibg=#FF9999 ctermbg=NONE
-    highlight Changed guibg=#99FF99 ctermbg=NONE
+    highlight CaseChangeWord guibg=#AAAAFF
+    highlight Separator guibg=#FF9999
+    highlight Changed guibg=#99FF99
 
     let curline = line('.')
     let startOfWord = getpos("'<")[2]
+    let endOfWord = getpos("'>")[2]
+    call add(s:matchIds, matchadd('CaseChangeWord', '\%'.curline.'l\%>'.(startOfWord).'c\%<'.(endOfWord).'c'))
     for i in indexes.changedLetters
         call add(s:matchIds, matchadd('Changed', '\%'.curline.'l\%'.(i + startOfWord).'c'))
     endfor
@@ -95,11 +107,5 @@ function! highlightdiff#HighlightDiff(oldWord, newWord) abort
         call add(s:matchIds, matchadd('Separator', '\%'.curline.'l\%'.(i + startOfWord).'c'))
     endfor
 
-    func! MyHandler(timer)
-        for id in s:matchIds
-            call matchdelete(id)
-        endfor
-        let s:matchIds = []
-    endfunc
-    let timer = timer_start(1000, 'MyHandler')
+    let s:timer = timer_start(g:highlightTimeout, 'highlightdiff#ClearHighlights')
 endfunction

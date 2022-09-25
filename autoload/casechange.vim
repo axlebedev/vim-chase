@@ -4,13 +4,13 @@
 " }}}
 " 1 . + Проверить что работает как надо
 " 2 . + Конфиг последовательности
-" 3 . - Подсветка при casechange#next (будто бы не очень нужно, перенесётся в п.10)
+" 3 . - Подсветка при casechange#next (сделано в п.9)
 " 4 . + Сделать casechange#prev
 " 5 . + undojoin
 " 6 .   Аббривеатуры, типа 'NDALabel'
 " 7 . + Сбросить visual mode на CursorMoved
 " 8 . + Старт из normal mode, поиск слова на котором стоит курсор (вкл. символ -)
-" 9 *   Подсветка диффа при casechange#next
+" 9 * + Подсветка диффа при casechange#next
 " 10.   Сделать аргумент функции, чтобы можно было сделать вызов с кастомной последовательностью
 " 11.   Сделать readme
 " 12. + Синонимы
@@ -67,8 +67,25 @@ function! s:OnCursorMoved() abort
 endfunction
 
 let s:savedVisualSelection = { 'start': 0, 'end': 0 }
+let s:gvTimer = 0
+function! GV(...) abort
+    call setpos("'<", [0, line('.'), s:savedVisualSelection.start])
+    call setpos("'>", [0, line('.'), s:savedVisualSelection.end])
+    normal! gv
+    let s:gvTimer = 0
+endfunc
+
+let s:augroupTimer = 0
 function! s:ReplaceWithNext(isPrev) abort
-    call timer_stopall()
+    if (s:sessionStarted == 1)
+        normal! gv
+    endif
+    call timer_stop(s:augroupTimer)
+    if (s:gvTimer)
+        call timer_stop(s:gvTimer)
+        call GV()
+    endif
+
     call s:ResetAugroup()
 
     let oldWord = s:GetSelectionWord()
@@ -87,15 +104,9 @@ function! s:ReplaceWithNext(isPrev) abort
     " normal! gv
     execute "normal! \<Esc>"
     let s:sessionStarted = 1
-    call timer_start(100, { -> s:SetAugroup() })
+    let s:augroupTimer = timer_start(100, { -> s:SetAugroup() })
     call highlightdiff#HighlightDiff(oldWord, newWord)
-    func! GV(a) abort
-        call setpos(".", [0, line('.'), s:savedVisualSelection.start])
-        call setpos("'<", [0, line('.'), s:savedVisualSelection.start])
-        call setpos("'>", [0, line('.'), s:savedVisualSelection.end])
-        normal! gv
-    endfunc
-    call timer_start(1000, function('GV'))
+    let s:gvTimer = timer_start(g:highlightTimeout, function('GV'))
 endfunction
 
 function! casechange#next() abort
