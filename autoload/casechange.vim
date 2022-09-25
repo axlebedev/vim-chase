@@ -2,14 +2,17 @@
 " \C - case sensitive
 " \v  -  magic mode (no need for \)
 " }}}
-" 1. + Проверить что работает как надо
-" 2.   Конфиг последовательности
-" 3.   Подсветка при casechange#next
-" 4. + Сделать casechange#prev
-" 5. + undojoin
-" 6.   Аббривеатуры, типа 'NDALabel'
-" 7. + Сбросить visual mode на CursorMoved
-" 8. + Старт из normal mode, поиск слова на котором стоит курсор (вкл. символ -)
+" 1 . + Проверить что работает как надо
+" 2 .   Конфиг последовательности
+" 3 .   Подсветка при casechange#next (будто бы не очень нужно)
+" 4 . + Сделать casechange#prev
+" 5 . + undojoin
+" 6 .   Аббривеатуры, типа 'NDALabel'
+" 7 . + Сбросить visual mode на CursorMoved
+" 8 . + Старт из normal mode, поиск слова на котором стоит курсор (вкл. символ -)
+" 9 *   Подсветка диффа при casechange#next
+" 10.   Сделать аругмент функции, чтобы можно было сделать вызов с кастомной последовательностью
+" 11.   Сделать readme
 
 function! s:GetSelectionColumns() abort
     let pos1 = getpos('v')[2]-1
