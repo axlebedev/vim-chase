@@ -73,6 +73,7 @@ function! s:ReplaceWithNext(isPrev) abort
     let oldWord = s:GetSelectionWord()
     let selectionColumns = s:GetSelectionColumns()
     let newWord = regex#GetNextWord(oldWord, a:isPrev)
+    call highlightdiff#HighlightDiff(oldWord, newWord)
     if (s:sessionStarted)
         undojoin | call setline('.', s:GetCurrentLineWithReplacedSelection(newWord))
     else
