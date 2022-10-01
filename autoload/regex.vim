@@ -16,7 +16,7 @@ let s:sentenceSnake = '\v\C^[[:lower:]][[:lower:][:digit:]]*(_[[:lower:][:digit:
 " upper    ANY_WORD
 let s:sentenceUpper = '\v\C^[[:upper:]][[:upper:][:digit:]]*(_[[:upper:][:digit:]]+)+$'
 " pascal   AnyWord
-let s:sentencePascal = '\v\C^[[:upper:]][[:lower:][:digit:]]*([[:upper:][:digit:]][[:lower:][:digit:]]+)+$'
+let s:sentencePascal = '\v\C^[[:upper:]]+[[:lower:][:digit:]]*([[:upper:][:digit:]]+[[:lower:][:digit:]]+)+[[:upper:]]*$'
 " title    Any Word
 let s:sentenceTitle = '\v\C^[[:upper:]][[:lower:][:digit:]]*( [[:upper:]][[:lower:][:digit:]]+)+$'
 
@@ -100,14 +100,30 @@ function! s:GetWordRegex(word) abort
 endfunction
 
 " Normalize string: any case -> to dash case (lower)
-function! s:ToDash(word, currentRegex) abort
+function! s:ToBasic(word, currentRegex) abort
+    let parts = []
+
     " camelCase, pascalCase
     if (a:currentRegex ==# s:sentenceCamel || a:currentRegex ==# s:sentencePascal)
-        return a:word->substitute('\C^\@<![[:upper:]]', '-\0', 'g')->tolower()
+        let parts = a:word
+            \ ->substitute('\C\v([[:lower:]])([[:upper:]])', '\1-\2', 'g')
+            \ ->substitute('\C\v([[:upper:]])([[:upper:]][[:lower:]])', '\1-\2', 'g')
+            \ ->split('-')
+    else
+        " all other cases
+        let parts = a:word
+            \ ->substitute('\C[^[:digit:][:lower:][:upper:]]', '-', 'g')
+            \ ->split('-')
     endif
 
-    " all other cases
-    return a:word->substitute('\C[^[:digit:][:lower:][:upper:]]', '-', 'g')->tolower()
+    let i = 0
+    while (i < parts->len())
+        if (parts[i] !~# '\C\v^[[:upper:][:digit:]]+$')
+            let parts[i] = parts[i]->tolower()
+        endif
+        let i += 1
+    endwhile
+    return parts->join('-')
 endfunction
 
 function! s:GetNextCase(group, oldRegex, isPrev) abort
@@ -118,7 +134,7 @@ function! s:GetNextCase(group, oldRegex, isPrev) abort
     return nextCase
 endfunction
 
-function! s:DashToNext(word, group, oldRegex, isPrev) abort
+function! s:BasicToNext(word, group, oldRegex, isPrev) abort
     let nextCase = s:GetNextCase(a:group, a:oldRegex, a:isPrev)
     if (nextCase ==# s:letterUpper
       \ || nextCase ==# s:wordUpper)
@@ -127,7 +143,7 @@ function! s:DashToNext(word, group, oldRegex, isPrev) abort
       \ || nextCase ==# s:wordLower)
         return a:word->tolower()
     elseif (nextCase ==# s:sentenceDash)
-        return a:word
+        return a:word->tolower()
     elseif (nextCase ==# s:sentenceCamel)
         return a:word->substitute('\v\-([[:lower:]])', '\u\1', 'g')
     elseif (nextCase ==# s:sentenceSnake)
@@ -146,7 +162,7 @@ endfunction
 
 function! regex#GetNextWord(oldWord, isPrev) abort
     let oldRegex = s:GetWordRegex(a:oldWord)
-    let dashWord = s:ToDash(a:oldWord, oldRegex.regex)
-    let newWord = s:DashToNext(dashWord, oldRegex.group, oldRegex.regex, a:isPrev)
+    let basicWord = s:ToBasic(a:oldWord, oldRegex.regex)
+    let newWord = s:BasicToNext(basicWord, oldRegex.group, oldRegex.regex, a:isPrev)
     return newWord
 endfunction
