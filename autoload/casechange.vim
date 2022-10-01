@@ -76,7 +76,7 @@ function! s:ReplaceWithNext(isPrev) abort
     let newWord = regex#GetNextWord(oldWord, a:isPrev)
 
     let s:savedVisualSelection = { 'start': selectionColumns.start + 1, 'end': selectionColumns.start + len(newWord) }
-        call setline('.', s:GetCurrentLineWithReplacedSelection(newWord))
+    call setline('.', s:GetCurrentLineWithReplacedSelection(newWord))
 
     call setpos("'<", [0, line('.'), s:savedVisualSelection.start])
     call setpos("'>", [0, line('.'), s:savedVisualSelection.end])
