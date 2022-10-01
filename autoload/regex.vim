@@ -1,3 +1,10 @@
+let s:savedParts = []
+
+" This one will be called on end of session, from SessionController
+function! regex#ResetSavedParts() abort
+    let s:savedParts = []
+endfunction
+
 let s:groups = {
     \ 'undefined': 'group-undefined',
     \ 'letter': 'group-letter',
@@ -183,7 +190,9 @@ endfunction
 
 function! regex#GetNextWord(oldWord, isPrev) abort
     let oldRegex = s:GetWordRegex(a:oldWord)
-    let parts = s:ToParts(a:oldWord, oldRegex.regex)
-    let newWord = s:PartsToNext(parts, oldRegex.group, oldRegex.regex, a:isPrev)
+    if (s:savedParts == [])
+        let s:savedParts = s:ToParts(a:oldWord, oldRegex.regex)
+    endif
+    let newWord = s:PartsToNext(s:savedParts, oldRegex.group, oldRegex.regex, a:isPrev)
     return newWord
 endfunction

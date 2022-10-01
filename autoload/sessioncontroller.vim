@@ -18,6 +18,7 @@ function! s:OnCursorMoved() abort
     call s:ResetAugroup()
     let s:sessionStarted = 0
     let &iskeyword = s:savedIskeyword
+    call regex#ResetSavedParts()
 
     " exit visual mode
     execute "normal! \<Esc>"
