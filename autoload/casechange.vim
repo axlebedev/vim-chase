@@ -14,12 +14,28 @@
 " 10.   Сделать аргумент функции, чтобы можно было сделать вызов с кастомной последовательностью
 " 11.   Сделать readme
 " 12. + Синонимы
-" 13.   Интернационализация: чтобы работали не только буквы латиницы
+" 13. + Интернационализация: чтобы работали не только буквы латиницы
 
 function! s:GetSelectionColumns() abort
-    let pos1 = getpos('v')[2]-1
-    let pos2 = getpos('.')[2]-1
-    return { 'start': min([pos1, pos2]), 'end': max([pos1, pos2]) }
+    let pos1 = getpos('v')[2]
+    let pos2 = getpos('.')[2]
+
+    let s:savedIskeyword = &iskeyword
+    set iskeyword+=-
+    let start = min([pos1, pos2]) - 1
+
+    let end = start + expand('<cword>')->len()
+    if (mode() == 'v')
+        let end = max([pos1, pos2])
+    endif
+    let linenr = line('.')
+    while (virtcol([linenr, end]) == virtcol([linenr, end + 1]))
+        let end += 1
+    endwhile
+
+    let &iskeyword = s:savedIskeyword
+
+    return { 'start': start, 'end': end }
 endfunction
 
 " Get visual selected text

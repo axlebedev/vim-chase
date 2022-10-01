@@ -92,7 +92,7 @@ function! highlightdiff#HighlightDiff(oldWord, newWord) abort
     call timer_stop(s:timer)
     let indexes = s:GetIndexesToHighlight(a:oldWord, a:newWord)
 
-    highlight CaseChangeWord guibg=#AAAAFF
+    highlight CaseChangeWord guibg=#C7A575
     highlight Separator guibg=#FF9999
     highlight Changed guibg=#99FF99
 
