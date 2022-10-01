@@ -1,4 +1,3 @@
-
 let s:groups = {
     \ 'undefined': 'group-undefined',
     \ 'letter': 'group-letter',
@@ -57,6 +56,35 @@ let s:caseDict = {
   \ 'letterLower': s:letterLower,
   \ }
 
+function! s:MapToLowerFunc(i, string) abort
+    return a:string->tolower()
+endfunction
+let s:MapToLower = function('s:MapToLowerFunc')
+
+function! s:MapToUpperFunc(i, string) abort
+    return a:string->toupper()
+endfunction
+let s:MapToUpper = function('s:MapToUpperFunc')
+
+function! s:MapToCapitalFunc(i, string) abort
+    let firstCharIndex = 0
+    while (charidx(a:string, firstCharIndex + 1) == 0)
+        let firstCharIndex += 1
+    endwhile
+
+    return a:string[0:firstCharIndex]->toupper() . a:string[firstCharIndex + 1:]->tolower()
+endfunction
+let s:MapToCapital = function('s:MapToCapitalFunc')
+
+function! s:MapToLowerIfNotUpperFunc(i, string) abort
+    if (a:string !~# '\C\v^[[:upper:][:digit:]]+$')
+        return a:string->tolower()
+    endif
+    return a:string
+endfunction
+let s:MapToLowerIfNotUpper = function('s:MapToLowerIfNotUpperFunc')
+
+
 function! s:MakeCasesOrderRegexArray(casesOrderNamesArray) abort
     return copy(a:casesOrderNamesArray)
       \ ->map({_, name -> s:caseDict[name]})
@@ -100,7 +128,7 @@ function! s:GetWordRegex(word) abort
 endfunction
 
 " Normalize string: any case -> to dash case (lower)
-function! s:ToBasic(word, currentRegex) abort
+function! s:ToParts(word, currentRegex) abort
     let parts = []
 
     " camelCase, pascalCase
@@ -116,14 +144,7 @@ function! s:ToBasic(word, currentRegex) abort
             \ ->split('-')
     endif
 
-    let i = 0
-    while (i < parts->len())
-        if (parts[i] !~# '\C\v^[[:upper:][:digit:]]+$')
-            let parts[i] = parts[i]->tolower()
-        endif
-        let i += 1
-    endwhile
-    return parts->join('-')
+    return parts->map(s:MapToLowerIfNotUpper)
 endfunction
 
 function! s:GetNextCase(group, oldRegex, isPrev) abort
@@ -134,35 +155,35 @@ function! s:GetNextCase(group, oldRegex, isPrev) abort
     return nextCase
 endfunction
 
-function! s:BasicToNext(word, group, oldRegex, isPrev) abort
+function! s:PartsToNext(parts, group, oldRegex, isPrev) abort
     let nextCase = s:GetNextCase(a:group, a:oldRegex, a:isPrev)
     if (nextCase ==# s:letterUpper
       \ || nextCase ==# s:wordUpper)
-        return a:word->toupper()
+        return a:parts->map(s:MapToUpper)->join('')
     elseif (nextCase ==# s:letterLower 
       \ || nextCase ==# s:wordLower)
-        return a:word->tolower()
+        return a:parts->map(s:MapToLower)->join('')
     elseif (nextCase ==# s:sentenceDash)
-        return a:word->tolower()
+        return a:parts->map(s:MapToLower)->join('-')
     elseif (nextCase ==# s:sentenceCamel)
-        return a:word->substitute('\v\-([[:lower:]])', '\u\1', 'g')
+        return (a:parts[0:0]->map(s:MapToLower)+a:parts[1:]->map(s:MapToCapital))->join('')
     elseif (nextCase ==# s:sentenceSnake)
-        return a:word->substitute('-', '_', 'g')
+        return a:parts->map(s:MapToLower)->join('_')
     elseif (nextCase ==# s:sentenceUpper)
-        return a:word->substitute('-', '_', 'g')->toupper()
+        return a:parts->map(s:MapToUpper)->join('_')
     elseif (nextCase ==# s:sentencePascal)
-        return a:word->substitute('\v\-([[:lower:]])', '\u\1', 'g')->substitute('\v^([[:lower:]])', '\u\1', '')
+        return a:parts->map(s:MapToCapital)->join('')
     elseif (nextCase ==# s:wordTitle
       \ || nextCase ==# s:sentenceTitle)
-        return a:word->substitute('\v\-([[:lower:]])', ' \u\1', 'g')->substitute('\v^([[:lower:]])', '\u\1', '')
+        return a:parts->map(s:MapToCapital)->join(' ')
     endif
 
-    return a:word
+    return s:parts->join('')
 endfunction
 
 function! regex#GetNextWord(oldWord, isPrev) abort
     let oldRegex = s:GetWordRegex(a:oldWord)
-    let basicWord = s:ToBasic(a:oldWord, oldRegex.regex)
-    let newWord = s:BasicToNext(basicWord, oldRegex.group, oldRegex.regex, a:isPrev)
+    let parts = s:ToParts(a:oldWord, oldRegex.regex)
+    let newWord = s:PartsToNext(parts, oldRegex.group, oldRegex.regex, a:isPrev)
     return newWord
 endfunction
