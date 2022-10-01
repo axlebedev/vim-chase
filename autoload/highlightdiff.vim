@@ -1,12 +1,15 @@
+function! s:GetCharAtIndex(str, index) abort
+    let charnr = strgetchar(a:str, charidx(a:str, a:index))
+    return nr2char(charnr)
+endfunction
+
 " Get all not-letter symbol indexes
 function! s:GetSeparatorIndexes(word) abort
     let res = []
     let i = 0
     while (i < a:word->len())
-        " echom i.': '.a:word[i].' add='.(a:word[i] !~? '\v\C[a-z0-9]')
-        if (a:word[i] !~? '\v[a-z0-9]')
+        if (s:GetCharAtIndex(a:word, i) !~? '[[:lower:][:digit:][:upper:]]')
             call add(res, i)
-            " echom 'res='.string(res)
         endif
         let i += 1
     endwhile
@@ -21,19 +24,19 @@ function! s:GetChangedIndexes(oldWord, newWord) abort
     let res = []
     let i = 0
     while (i < a:oldWord->len())
-        " echom a:oldWord[i].' !=# '.a:newWord[i].'='.(a:oldWord[i] !=# a:newWord[i])
-        if (a:oldWord[i] !=# a:newWord[i])
+        let oldChar = s:GetCharAtIndex(a:oldWord, i)
+        let newChar = s:GetCharAtIndex(a:newWord, i)
+        if (oldChar !=# newChar)
             call add(res, i)
         endif
         let i += 1
     endwhile
-    " echom 'GetChangedIndexes('.a:oldWord.', '.a:newWord.') res='.string(res)
     return res
 endfunction
 
 " leave only letters and numbers
 function! s:GetCleanWord(word) abort
-    return a:word->substitute('\C[^a-zA-Z0-9]', '', 'g')
+    return a:word->substitute('\C[^[:lower:][:upper:][:digit:]]', '', 'g')
 endfunction
 
 " insert separator in old word
@@ -41,12 +44,10 @@ function! s:GetDirtyWord(oldWord, newWord) abort
     let dirtyOldWord = copy(a:oldWord)
     if (a:newWord->len() > a:oldWord->len()) 
         let separatorIndexes = s:GetSeparatorIndexes(a:newWord)
-        " echom 'a:newWord='.string(a:newWord)
-        " echom 'separatorIndexes='.string(separatorIndexes)
         let i = 0
         while (i < separatorIndexes->len())
-            let separ = separatorIndexes[i]
-            let dirtyOldWord = dirtyOldWord[0:separ-1].a:newWord[separ].dirtyOldWord[separ:]
+            let separatorIndex = separatorIndexes[i]
+            let dirtyOldWord = dirtyOldWord[0:separatorIndex-1].a:newWord[separatorIndex].dirtyOldWord[separatorIndex:]
             let i += 1
         endwhile
     endif
@@ -55,7 +56,6 @@ endfunction
 
 function! s:GetIndexesToHighlight(oldWord, newWord) abort
     if (a:oldWord->len() > a:newWord->len())
-        " echom 'old > new'
         let cleanOldWord = s:GetCleanWord(a:oldWord)
         return {
           \ 'separator': [],
@@ -65,14 +65,12 @@ function! s:GetIndexesToHighlight(oldWord, newWord) abort
 
     let separatorIndexes = s:GetSeparatorIndexes(a:newWord)
     if (a:oldWord->len() == a:newWord->len())
-        " echom 'old == new'
         return {
           \ 'separator': separatorIndexes,
           \ 'changedLetters': s:GetChangedIndexes(a:oldWord, a:newWord) 
       \ }
     endif
 
-        " echom 'old < new'
     return {
           \ 'separator': separatorIndexes,
           \ 'changedLetters': s:GetChangedIndexes(s:GetDirtyWord(a:oldWord, a:newWord), a:newWord) 
