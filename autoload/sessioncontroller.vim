@@ -1,3 +1,5 @@
+let s:savedIskeyword = &iskeyword
+
 function! s:ResetAugroup() abort
     augroup au_vimcasechange
         autocmd!
@@ -15,12 +17,18 @@ let s:sessionStarted = 0
 function! s:OnCursorMoved() abort
     call s:ResetAugroup()
     let s:sessionStarted = 0
+    let &iskeyword = s:savedIskeyword
 
     " exit visual mode
     execute "normal! \<Esc>"
 endfunction
 
 function! sessioncontroller#SessionController() abort
+    if (s:sessionStarted == 0)
+        let s:savedIskeyword = &iskeyword
+        set iskeyword+=-
+    endif
+
     call s:ResetAugroup()
 
     if (s:sessionStarted)

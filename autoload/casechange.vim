@@ -20,8 +20,6 @@ function! s:GetSelectionColumns() abort
     let pos1 = getpos('v')[2]
     let pos2 = getpos('.')[2]
 
-    let s:savedIskeyword = &iskeyword
-    set iskeyword+=-
     let start = min([pos1, pos2]) - 1
 
     let end = start + expand('<cword>')->len()
@@ -33,18 +31,13 @@ function! s:GetSelectionColumns() abort
         let end += 1
     endwhile
 
-    let &iskeyword = s:savedIskeyword
-
     return { 'start': start, 'end': end }
 endfunction
 
 " Get visual selected text
 function! s:GetSelectionWord() abort
     if (mode() == 'n')
-        let s:savedIskeyword = &iskeyword
-        set iskeyword+=-
         normal! viw
-        let &iskeyword = s:savedIskeyword
     endif
     let selection = s:GetSelectionColumns()
     return getline('.')[selection.start:selection.end]
