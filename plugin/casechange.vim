@@ -27,14 +27,14 @@ let g:sentenceCasesOrder = get(g:, 'caseChangeSentenceCasesOrder', [
   \ ])
 
 let g:wordCasesOrder = get(g:, 'caseChangeWordCasesOrder', [
-  \ 'wordUpper',
-  \ 'wordLower',
-  \ 'wordTitle',
+  \ 'upper',
+  \ 'lower',
+  \ 'title',
   \ ])
 
 let g:letterCasesOrder = get(g:, 'caseChangeLetterCasesOrder', [
-  \ 'letterUpper',
-  \ 'letterLower',
+  \ 'upper',
+  \ 'lower',
   \ ])
 
 let g:highlightTimeout = get(g:, 'caseChangeHighlightTimeout', 200)
