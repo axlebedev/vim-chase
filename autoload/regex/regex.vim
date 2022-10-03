@@ -18,6 +18,8 @@ let s:groups = {
 \ }
 let regex#regex#groups = s:groups
 
+call regex#case#lower#init()
+call regex#case#upper#init()
 call regex#case#camel#init()
 call regex#case#lower_dash#init()
 call regex#case#lower_underscore#init()
@@ -27,12 +29,12 @@ call regex#case#undefined#init()
 call regex#case#upper_underscore#init()
 let s:casesArrays = {
 \ 'letter': [
-\     regex#case#lower_underscore#case,
-\     regex#case#upper_underscore#case
+\     regex#case#lower#case,
+\     regex#case#upper#case
 \ ],
 \ 'word': [
-\     regex#case#lower_underscore#case,
-\     regex#case#upper_underscore#case,
+\     regex#case#lower#case,
+\     regex#case#upper#case,
 \     regex#case#title#case
 \ ],
 \ 'sentence': [
@@ -109,7 +111,11 @@ endfunction
 function! s:GetWordGroup(word) abort
     if (a:word->len() < 2)
         return s:groups.letter
-    elseif (a:word =~# '\v\C^[[:upper:][:digit:]]+$' || a:word =~# '\v\C^[[:lower:][:digit:]]+$')
+    elseif (
+      \    a:word =~# '\v\C^[[:upper:][:digit:]]+$' 
+      \ || a:word =~# '\v\C^[[:lower:][:digit:]]+$'
+      \ || a:word =~# '\v\C^[[:upper:]][[:lower:][:digit:]]+$'
+      \ )
         " if only upper or digits or only lower and digits - this is single word
         return s:groups.word
     endif
@@ -118,11 +124,13 @@ function! s:GetWordGroup(word) abort
 endfunction
 
 function! s:GetWordCase(word, group) abort
-    let cases = s:casesArrays.sentence
+    let cases = [g:regex#case#undefined#case]
     if (a:group == s:groups.letter)
         let cases = s:casesArrays.letter
     elseif (a:group == s:groups.word)
         let cases = s:casesArrays.word
+    elseif (a:group == s:groups.sentence)
+        let cases = s:casesArrays.sentence
     endif
 
     let i = 0
