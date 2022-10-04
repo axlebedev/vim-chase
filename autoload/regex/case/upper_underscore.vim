@@ -6,7 +6,7 @@ function! s:StringToParts(word) abort
         \ ->substitute('\C[^[:digit:][:lower:][:upper:]]', '_', 'g')
         \ ->split('_')
 
-    return parts->map(funcref('func#MapToLowerIfNotUpper'))
+    return parts->map(funcref('func#MapToLower'))
 endfunction
 
 function! s:PartsToString(parts) abort
