@@ -7,7 +7,7 @@
 " 3 . - Подсветка при casechange#next (сделано в п.9)
 " 4 . + Сделать casechange#prev
 " 5 . + undojoin
-" 6 .   Аббривеатуры, типа 'NDALabel'
+" 6 . + Аббривеатуры, типа 'NDALabel'
 " 7 . + Сбросить visual mode на CursorMoved
 " 8 . + Старт из normal mode, поиск слова на котором стоит курсор (вкл. символ -)
 " 9 * + Подсветка диффа при casechange#next

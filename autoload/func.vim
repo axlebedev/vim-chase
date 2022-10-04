@@ -24,3 +24,10 @@ function! func#MapToLowerIfNotUpper(i, string) abort
     endif
     return a:string
 endfunction
+
+function! func#MapToCapitalIfNotUpper(i, string) abort
+    if (a:string !~# '\C\v^[[:upper:][:digit:]]+$')
+        return func#MapToCapital(0, a:string)
+    endif
+    return a:string
+endfunction

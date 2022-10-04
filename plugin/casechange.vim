@@ -21,6 +21,7 @@ let g:sentenceCasesOrder = get(g:, 'caseChangeSentenceCasesOrder', [
   \ 'dash',
   \ 'snake',
   \ 'camel',
+  \ 'camel_abbr',
   \ 'pascal',
   \ 'upper',
   \ 'upper_space',
