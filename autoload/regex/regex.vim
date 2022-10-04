@@ -1,3 +1,18 @@
+" NOTE
+" How to add regex:
+" 1. (In folder 'autoload/regex/case') Copypaste any file
+" 2. (In new file) Main work: change values in that file: 
+"     - regex
+"     - array of names of this case (Warning: it should not repeat any of existing one)
+"     - function 'StringToParts': how incoming string should be divided into parts 
+"       example for camelCase: 'oneTWOThree' => ['one','TWO','three']
+"       every word should be in lowercase, abbriveation - in upper case
+"     - function 'PartsToString': how incoming array of words should be squashed into one
+"     - empty function 'init' - for correct initialization of export variables
+" 3. (In 'autoload/regex/regex') 'call regex#<casename>#init()'
+" 4. (In 'autoload/regex/regex') Add new '...#case' to 'casesArrays'
+" 5. (In vimrc) Add new case to corresponding casesOrder
+
 call func#init()
 " =============================================================================
 
@@ -27,6 +42,7 @@ call regex#case#pascal#init()
 call regex#case#title#init()
 call regex#case#undefined#init()
 call regex#case#upper_underscore#init()
+call regex#case#upper_space#init()
 let s:casesArrays = {
 \ 'letter': [
 \     regex#case#lower#case,
@@ -44,6 +60,7 @@ let s:casesArrays = {
 \     regex#case#pascal#case,
 \     regex#case#title#case,
 \     regex#case#upper_underscore#case,
+\     regex#case#upper_space#case,
 \ ],
 \ 'undefined': [regex#case#undefined#case],
 \ }
