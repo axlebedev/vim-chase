@@ -1,41 +1,46 @@
 let s:savedIskeyword = &iskeyword
-
-function! s:ResetAugroup() abort
-    augroup au_vimcasechange
-        autocmd!
-    augroup END
-endfunction
-
-function! s:SetAugroup() abort
-    augroup au_vimcasechange
-        autocmd!
-        autocmd CursorMoved * call s:OnCursorMoved()
-    augroup END
-endfunction
-
 let s:sessionStarted = 0
-function! s:OnCursorMoved() abort
-    call s:ResetAugroup()
-    let s:sessionStarted = 0
-    let &iskeyword = s:savedIskeyword
-    call regex#regex#ResetSavedParts()
+let s:startingMode = 'n'
+let s:highlightTimer = 0
 
-    " exit visual mode
-    execute "normal! \<Esc>"
+function! s:ResetSessionEndTrigger() abort
+    augroup au_vimcasechange
+        autocmd!
+    augroup END
 endfunction
 
-function! sessioncontroller#SessionController() abort
-    if (s:sessionStarted == 0)
+function! s:SetSessionEndTrigger() abort
+    augroup au_vimcasechange
+        autocmd!
+        autocmd CursorMoved * call sessioncontroller#SessionControllerReset()
+    augroup END
+endfunction
+
+function! sessioncontroller#SessionControllerStartRun() abort
+    if (s:sessionStarted)
+        undojoin
+        call highlightdiff#ClearHighlights()
+        call s:ResetSessionEndTrigger()
+    else
+        let s:startingMode = mode()
         let s:savedIskeyword = &iskeyword
         set iskeyword+=-
     endif
-
-    call s:ResetAugroup()
-
-    if (s:sessionStarted)
-        undojoin
-    endif
-
     let s:sessionStarted = 1
-    call timer_start(10, { -> s:SetAugroup() })
+    call timer_start(10, { -> s:SetSessionEndTrigger() })
+endfunction
+
+function! sessioncontroller#SessionControllerEndRun() abort
+    let s:highlightTimer = timer_start(g:highlightTimeout, 'highlightdiff#ClearHighlights')
+endfunction
+
+function! sessioncontroller#SessionControllerReset() abort
+    let s:sessionStarted = 0
+    if (s:startingMode == 'n')
+        execute "normal! \<Esc>"
+    endif
+    call highlightdiff#ClearHighlights()
+    let &iskeyword = s:savedIskeyword
+    call regex#regex#OnSessionEnd()
+    call s:ResetSessionEndTrigger()
 endfunction

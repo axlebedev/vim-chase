@@ -64,13 +64,12 @@ function! GV(...) abort
 endfunc
 
 function! s:ReplaceWithNext(isPrev) abort
+    call sessioncontroller#SessionControllerStartRun()
     if (s:gvTimer)
         call timer_stop(s:gvTimer)
         call GV()
     endif
 
-    " NOTE: undojoin also here
-    call sessioncontroller#SessionController()
 
     let oldWord = s:GetSelectionWord()
     let selectionColumns = s:GetSelectionColumns()
@@ -84,6 +83,7 @@ function! s:ReplaceWithNext(isPrev) abort
     call setpos(".", [0, line('.'), s:savedVisualSelection.end])
     execute "normal! \<Esc>"
     call highlightdiff#HighlightDiff(oldWord, newWord)
+    call sessioncontroller#SessionControllerEndRun()
     let s:gvTimer = timer_start(g:highlightTimeout, function('GV'))
 endfunction
 

@@ -85,9 +85,7 @@ function! highlightdiff#ClearHighlights(...) abort
         let s:matchIds = []
 endfunction
 
-let s:timer = 0
 function! highlightdiff#HighlightDiff(oldWord, newWord) abort
-    call timer_stop(s:timer)
     let indexes = s:GetIndexesToHighlight(a:oldWord, a:newWord)
 
     highlight CaseChangeWord guibg=#C7A575
@@ -104,6 +102,4 @@ function! highlightdiff#HighlightDiff(oldWord, newWord) abort
     for i in indexes.separator
         call add(s:matchIds, matchadd('Separator', '\%'.curline.'l\%'.(i + startOfWord).'c'))
     endfor
-
-    let s:timer = timer_start(g:highlightTimeout, 'highlightdiff#ClearHighlights')
 endfunction

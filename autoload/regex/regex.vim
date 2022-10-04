@@ -4,7 +4,7 @@ call func#init()
 let s:savedParts = []
 
 " This one will be called on end of session, from SessionController
-function! regex#regex#ResetSavedParts() abort
+function! regex#regex#OnSessionEnd() abort
     let s:savedParts = []
 endfunction
 
