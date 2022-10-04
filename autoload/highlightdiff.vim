@@ -88,6 +88,9 @@ endfunction
 function! highlightdiff#HighlightDiff(oldWord, newWord) abort
     let indexes = s:GetIndexesToHighlight(a:oldWord, a:newWord)
 
+    " We cant override visual selection, so go to normal mode
+    execute "normal! \<Esc>"
+
     highlight CaseChangeWord guibg=#C7A575
     highlight Separator guibg=#FF9999
     highlight Changed guibg=#99FF99

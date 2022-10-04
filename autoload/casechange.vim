@@ -32,7 +32,7 @@ function! s:GetSelectionColumns() abort
         let end += 1
     endwhile
 
-    return { 'start': start, 'end': end }
+    return { 'start': start, 'end': end - 1 }
 endfunction
 
 " Get visual selected text
@@ -54,37 +54,18 @@ function! s:GetCurrentLineWithReplacedSelection(argument) abort
     return line[:selection.start-1].a:argument.line[selection.end+1:]
 endfunction
 
-let s:savedVisualSelection = { 'start': 0, 'end': 0 }
-let s:gvTimer = 0
-function! GV(...) abort
-    call setpos("'<", [0, line('.'), s:savedVisualSelection.start])
-    call setpos("'>", [0, line('.'), s:savedVisualSelection.end])
-    normal! gv
-    let s:gvTimer = 0
-endfunc
-
 function! s:ReplaceWithNext(isPrev) abort
     call sessioncontroller#SessionControllerStartRun()
-    if (s:gvTimer)
-        call timer_stop(s:gvTimer)
-        call GV()
-    endif
-
 
     let oldWord = s:GetSelectionWord()
     let selectionColumns = s:GetSelectionColumns()
     let newWord = regex#regex#GetNextWord(oldWord, a:isPrev)
 
-    let s:savedVisualSelection = { 'start': selectionColumns.start + 1, 'end': selectionColumns.start + len(newWord) }
+    call sessioncontroller#SetVisualSelection({ 'start': selectionColumns.start + 1, 'end': selectionColumns.start + len(newWord) })
     call setline('.', s:GetCurrentLineWithReplacedSelection(newWord))
 
-    call setpos("'<", [0, line('.'), s:savedVisualSelection.start])
-    call setpos("'>", [0, line('.'), s:savedVisualSelection.end])
-    call setpos(".", [0, line('.'), s:savedVisualSelection.end])
-    execute "normal! \<Esc>"
     call highlightdiff#HighlightDiff(oldWord, newWord)
     call sessioncontroller#SessionControllerEndRun()
-    let s:gvTimer = timer_start(g:highlightTimeout, function('GV'))
 endfunction
 
 function! casechange#next() abort
