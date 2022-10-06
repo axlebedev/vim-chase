@@ -2,7 +2,6 @@ let s:savedIskeyword = &iskeyword
 let s:sessionStarted = 0
 let s:startingMode = 'n'
 let s:highlightTimer = 0
-let s:savedCursorPosition = 0
 
 let s:savedVisualSelection = { 'start': 0, 'end': 0 }
 let s:gvTimer = 0
@@ -40,7 +39,6 @@ function! sessioncontroller#SessionControllerStartRun() abort
         let s:startingMode = mode()
         let s:savedIskeyword = &iskeyword
         set iskeyword+=-
-        let s:savedCursorPosition = getpos('.')
     endif
     let oldSessionStarted = s:sessionStarted
     let s:sessionStarted = 1
@@ -69,7 +67,6 @@ function! sessioncontroller#SessionControllerReset() abort
     let s:gvTimer = 0
     if (s:startingMode == 'n')
         execute "normal! \<Esc>"
-        call setpos('.', s:savedCursorPosition)
     endif
     call highlightdiff#ClearHighlights()
     let &iskeyword = s:savedIskeyword
