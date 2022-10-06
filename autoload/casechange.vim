@@ -65,7 +65,9 @@ function! s:ReplaceWithNext(isPrev) abort
     call sessioncontroller#SetVisualSelection({ 'start': selectionColumns.start + 1, 'end': selectionColumns.start + len(newWord) })
     call setline('.', s:GetCurrentLineWithReplacedSelection(newWord))
 
-    call highlightdiff#HighlightDiff(oldWord, newWord)
+    if (g:highlightTimeout)
+        call highlightdiff#HighlightDiff(oldWord, newWord)
+    endif
     call sessioncontroller#SessionControllerEndRun()
 endfunction
 

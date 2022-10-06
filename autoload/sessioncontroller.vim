@@ -56,7 +56,11 @@ function! sessioncontroller#SessionControllerEndRun() abort
     call setpos("'>", [0, line('.'), s:savedVisualSelection.end])
     call setpos(".", [0, line('.'), s:savedVisualSelection.end])
     let s:highlightTimer = timer_start(g:highlightTimeout, 'highlightdiff#ClearHighlights')
-    let s:gvTimer = timer_start(g:highlightTimeout, function('GV'))
+    if (g:highlightTimeout)
+        let s:gvTimer = timer_start(g:highlightTimeout, function('GV'))
+    else
+        call GV()
+    endif
 endfunction
 
 function! sessioncontroller#SessionControllerReset() abort
