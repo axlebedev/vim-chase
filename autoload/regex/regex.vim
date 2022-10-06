@@ -14,16 +14,6 @@
 " 5. (In vimrc) Add new case to corresponding casesOrder
 
 call func#init()
-" =============================================================================
-
-let s:savedParts = []
-
-" This one will be called on end of session, from SessionController
-function! regex#regex#OnSessionEnd() abort
-    let s:savedParts = []
-endfunction
-
-" =============================================================================
 
 let s:groups = {
     \ 'undefined': 'group-undefined',
@@ -32,6 +22,23 @@ let s:groups = {
     \ 'sentence': 'group-sentence',
 \ }
 let regex#regex#groups = s:groups
+
+" =============================================================================
+
+let s:savedParts = []
+let s:savedGroup = s:groups.undefined
+let s:savedCase = 0
+let s:sessionCount = 0
+
+" This one will be called on end of session, from SessionController
+function! regex#regex#OnSessionEnd() abort
+    let s:savedParts = []
+    let s:savedGroup = s:groups.undefined
+    let s:savedCase = 0
+    let s:sessionCount = 0
+endfunction
+
+" =============================================================================
 
 call regex#case#lower#init()
 call regex#case#upper#init()
@@ -107,9 +114,8 @@ function! s:GetCasesOrderByGroup(group) abort
     return g:sentenceCasesOrder
 endfunction
 
-function! s:GetNextCase(group, oldCase, isPrev) abort
+function! s:GetNextCase(group, oldCase, d) abort
     let casesOrderArray = s:GetCasesOrderByGroup(a:group)
-    let d = a:isPrev ? -1 : 1
 
     let curindex = 0
     while (curindex < casesOrderArray->len())
@@ -119,7 +125,7 @@ function! s:GetNextCase(group, oldCase, isPrev) abort
         endif
         let curindex += 1
     endwhile
-    let nextCaseIndex = (curindex + d) % casesOrderArray->len()
+    let nextCaseIndex = (curindex + a:d) % casesOrderArray->len()
 
     let nextCaseName = casesOrderArray[nextCaseIndex]
     return s:FindCaseByName(nextCaseName, a:group)
@@ -164,13 +170,15 @@ function! s:GetWordCase(word, group) abort
 endfunction
 
 function! regex#regex#GetNextWord(oldWord, isPrev) abort
-    let group = s:GetWordGroup(a:oldWord)
-    let oldCase = s:GetWordCase(a:oldWord, group)
-    if (s:savedParts->len() == 0)
-        let s:savedParts = oldCase.StringToParts(a:oldWord)
+    if (s:sessionCount == 0)
+        let s:savedGroup = s:GetWordGroup(a:oldWord)
+        let s:savedCase = s:GetWordCase(a:oldWord, s:savedGroup)
+        let s:savedParts = s:savedCase.StringToParts(a:oldWord)
     endif
     
-    let nextCase = s:GetNextCase(group, oldCase, a:isPrev)
+    let s:sessionCount += 1
+    let d = a:isPrev ? -s:sessionCount : s:sessionCount
+    let nextCase = s:GetNextCase(s:savedGroup, s:savedCase, d)
     let newWord = nextCase.PartsToString(s:savedParts->copy())
     return newWord
 endfunction

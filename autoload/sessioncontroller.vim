@@ -42,11 +42,13 @@ function! sessioncontroller#SessionControllerStartRun() abort
         set iskeyword+=-
         let s:savedCursorPosition = getpos('.')
     endif
+    let oldSessionStarted = s:sessionStarted
     let s:sessionStarted = 1
     call timer_start(10, { -> s:SetSessionEndTrigger() })
     if (s:gvTimer)
         call GV()
     endif
+    return oldSessionStarted
 endfunction
 
 function! sessioncontroller#SessionControllerEndRun() abort
