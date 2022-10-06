@@ -18,6 +18,7 @@
 " 14.   Добавить больше возможных регекспов
 " 15. - Добавить проверку на повторения имён - не нужно после того, как мы
 "       научились работать с повторами
+" 16.   Добавить конфиг цветов WARN! autocmd ColorScheme * \ highlight CaseChangeWord guibg=#0000FF
 
 function! s:GetSelectionColumns() abort
     let pos1 = getpos('v')[2]

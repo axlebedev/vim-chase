@@ -1,3 +1,18 @@
+let s:highlightsDeclared = 0
+function! s:DeclareHighlightGroups() abort
+    " highlights may be declared in vim config
+    if (!hlexists('CaseChangeWord'))
+        highlight CaseChangeWord guibg=#C7A575
+    endif
+    if (!hlexists('CaseChangeSeparator'))
+        highlight CaseChangeSeparator guibg=#FF9999
+    endif
+    if (!hlexists('CaseChangeChangedLetter'))
+        highlight CaseChangeChangedLetter guibg=#99FF99
+    endif
+    let s:highlightsDeclared = 1
+endfunction
+
 function! s:GetCharAtIndex(str, index) abort
     let charnr = strgetchar(a:str, charidx(a:str, a:index))
     return nr2char(charnr)
@@ -86,23 +101,22 @@ function! highlightdiff#ClearHighlights(...) abort
 endfunction
 
 function! highlightdiff#HighlightDiff(oldWord, newWord) abort
+    if (!s:highlightsDeclared)
+        call s:DeclareHighlightGroups()
+    endif
     let indexes = s:GetIndexesToHighlight(a:oldWord, a:newWord)
 
     " We cant override visual selection, so go to normal mode
     execute "normal! \<Esc>"
-
-    highlight CaseChangeWord guibg=#C7A575
-    highlight Separator guibg=#FF9999
-    highlight Changed guibg=#99FF99
 
     let curline = line('.')
     let startOfWord = getpos("'<")[2]
     let endOfWord = getpos("'>")[2]
     call add(s:matchIds, matchadd('CaseChangeWord', '\%'.curline.'l\%>'.(startOfWord).'c\%<'.(endOfWord).'c'))
     for i in indexes.changedLetters
-        call add(s:matchIds, matchadd('Changed', '\%'.curline.'l\%'.(i + startOfWord).'c'))
+        call add(s:matchIds, matchadd('CaseChangeChangedLetter', '\%'.curline.'l\%'.(i + startOfWord).'c'))
     endfor
     for i in indexes.separator
-        call add(s:matchIds, matchadd('Separator', '\%'.curline.'l\%'.(i + startOfWord).'c'))
+        call add(s:matchIds, matchadd('CaseChangeSeparator', '\%'.curline.'l\%'.(i + startOfWord).'c'))
     endfor
 endfunction

@@ -39,7 +39,7 @@ let g:letterCasesOrder = get(g:, 'caseChangeLetterCasesOrder', [
   \ 'lower',
   \ ])
 
-let g:highlightTimeout = get(g:, 'caseChangeHighlightTimeout', 20000)
+let g:highlightTimeout = get(g:, 'caseChangeHighlightTimeout', 2000)
 
 if !exists("g:casechange_nomap")
     nnoremap ~ <CMD>call casechange#next()<CR>
