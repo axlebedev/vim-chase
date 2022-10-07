@@ -176,9 +176,8 @@ function! regex#regex#GetNextWord(oldWord, isPrev) abort
         let s:savedParts = s:savedCase.StringToParts(a:oldWord)
     endif
     
-    let s:sessionCount += 1
-    let d = a:isPrev ? -s:sessionCount : s:sessionCount
-    let nextCase = s:GetNextCase(s:savedGroup, s:savedCase, d)
+    let s:sessionCount += a:isPrev ? -1 : 1
+    let nextCase = s:GetNextCase(s:savedGroup, s:savedCase, s:sessionCount)
     let newWord = nextCase.PartsToString(s:savedParts->copy())
     return newWord
 endfunction
