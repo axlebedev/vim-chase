@@ -107,11 +107,11 @@ endfunction
 
 function! s:GetCasesOrderByGroup(group) abort
     if (a:group == s:groups.letter)
-        return g:letterCasesOrder
+        return getconfig#GetConfig('letterCasesOrder')
     elseif (a:group == s:groups.word)
-        return g:wordCasesOrder
+        return getconfig#GetConfig('wordCasesOrder')
     endif
-    return g:sentenceCasesOrder
+    return getconfig#GetConfig('sentenceCasesOrder')
 endfunction
 
 function! s:GetNextCase(group, oldCase, d) abort
