@@ -18,13 +18,13 @@ function! sessioncontroller#SetVisualSelection(selection) abort
 endfunction
 
 function! s:ResetSessionEndTrigger() abort
-    augroup au_vimcasechange
+    augroup au_vimchase
         autocmd!
     augroup END
 endfunction
 
 function! s:SetSessionEndTrigger() abort
-    augroup au_vimcasechange
+    augroup au_vimchase
         autocmd!
         autocmd CursorMoved * call sessioncontroller#SessionControllerReset()
     augroup END

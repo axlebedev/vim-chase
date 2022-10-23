@@ -4,13 +4,13 @@
 " }}}
 " 1 . + Проверить что работает как надо
 " 2 . + Конфиг последовательности
-" 3 . - Подсветка при casechange#next (сделано в п.9)
-" 4 . + Сделать casechange#prev
+" 3 . - Подсветка при chase#next (сделано в п.9)
+" 4 . + Сделать chase#prev
 " 5 . + undojoin
 " 6 . + Аббривеатуры, типа 'NDALabel'
 " 7 . + Сбросить visual mode на CursorMoved
 " 8 . + Старт из normal mode, поиск слова на котором стоит курсор (вкл. символ -)
-" 9 * + Подсветка диффа при casechange#next
+" 9 * + Подсветка диффа при chase#next
 " 10.   Сделать аргумент функции, чтобы можно было сделать вызов с кастомной последовательностью
 " 11.   Сделать readme
 " 12. + Синонимы
@@ -18,7 +18,7 @@
 " 14.   Добавить больше возможных регекспов
 " 15. - Добавить проверку на повторения имён - не нужно после того, как мы
 "       научились работать с повторами
-" 16.   Добавить конфиг цветов WARN! autocmd ColorScheme * \ highlight CaseChangeWord guibg=#0000FF
+" 16.   Добавить конфиг цветов WARN! autocmd ColorScheme * \ highlight ChaseWord guibg=#0000FF
 
 function! s:GetSelectionColumns() abort
     let pos1 = getpos('v')[2]
@@ -73,10 +73,10 @@ function! s:ReplaceWithNext(isPrev) abort
     call sessioncontroller#SessionControllerEndRun()
 endfunction
 
-function! casechange#next() abort
+function! chase#next() abort
     call s:ReplaceWithNext(0)
 endfunction
 
-function! casechange#prev() abort
+function! chase#prev() abort
     call s:ReplaceWithNext(1)
 endfunction

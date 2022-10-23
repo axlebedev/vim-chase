@@ -3,7 +3,7 @@ function! getconfig#GetConfig(name) abort
         return get(b:, a:name)
     endif
 
-    " Assume that all configs are set at plugin/casechange.vim
+    " Assume that all configs are set at plugin/chase.vim
     return get(g:, a:name)
 endfunction
 

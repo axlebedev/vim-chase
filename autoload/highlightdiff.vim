@@ -1,14 +1,14 @@
 let s:highlightsDeclared = 0
 function! s:DeclareHighlightGroups() abort
     " highlights may be declared in vim config
-    if (!hlexists('CaseChangeWord'))
-        highlight CaseChangeWord guibg=#C7A575
+    if (!hlexists('ChaseWord'))
+        highlight ChaseWord guibg=#C7A575
     endif
-    if (!hlexists('CaseChangeSeparator'))
-        highlight CaseChangeSeparator guibg=#FF9999
+    if (!hlexists('ChaseSeparator'))
+        highlight ChaseSeparator guibg=#FF9999
     endif
-    if (!hlexists('CaseChangeChangedLetter'))
-        highlight CaseChangeChangedLetter guibg=#99FF99
+    if (!hlexists('ChaseChangedLetter'))
+        highlight ChaseChangedLetter guibg=#99FF99
     endif
     let s:highlightsDeclared = 1
 endfunction
@@ -112,11 +112,11 @@ function! highlightdiff#HighlightDiff(oldWord, newWord) abort
     let curline = line('.')
     let startOfWord = getpos("'<")[2]
     let endOfWord = getpos("'>")[2]
-    call add(s:matchIds, matchadd('CaseChangeWord', '\%'.curline.'l\%>'.(startOfWord).'c\%<'.(endOfWord).'c'))
+    call add(s:matchIds, matchadd('ChaseWord', '\%'.curline.'l\%>'.(startOfWord).'c\%<'.(endOfWord).'c'))
     for i in indexes.changedLetters
-        call add(s:matchIds, matchadd('CaseChangeChangedLetter', '\%'.curline.'l\%'.(i + startOfWord).'c'))
+        call add(s:matchIds, matchadd('ChaseChangedLetter', '\%'.curline.'l\%'.(i + startOfWord).'c'))
     endfor
     for i in indexes.separator
-        call add(s:matchIds, matchadd('CaseChangeSeparator', '\%'.curline.'l\%'.(i + startOfWord).'c'))
+        call add(s:matchIds, matchadd('ChaseSeparator', '\%'.curline.'l\%'.(i + startOfWord).'c'))
     endfor
 endfunction
