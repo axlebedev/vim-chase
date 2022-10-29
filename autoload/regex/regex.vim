@@ -27,8 +27,6 @@ import './case/upper.vim'
 import './case/upper_space.vim'
 import './case/upper_underscore.vim'
 
-call func#init()
-
 let s:groups = {
     \ 'undefined': 'group-undefined',
     \ 'letter': 'group-letter',
