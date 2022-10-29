@@ -7,8 +7,8 @@ var name = ['upper_space']
 
 def StringToParts(word: string): list<string>
     var parts = word
-        \ ->substitute('\C[^[:digit:][:lower:][:upper:]]', '_', 'g')
-        \ ->split('_')
+        ->substitute('\C[^[:digit:][:lower:][:upper:]]', '_', 'g')
+        ->split('_')
 
     return parts->map(func.MapToLower)
 enddef

@@ -7,8 +7,8 @@ var name = ['undefined']
 
 def StringToParts(word: string): list<string>
     var parts = word
-                \ ->substitute('\C[^[:digit:][:lower:][:upper:]]', '-', 'g')
-                \ ->split('-')
+        ->substitute('\C[^[:digit:][:lower:][:upper:]]', '-', 'g')
+        ->split('-')
 
     return parts->map(func.MapToLowerIfNotUpper)
 enddef

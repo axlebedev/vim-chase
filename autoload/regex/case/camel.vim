@@ -7,9 +7,9 @@ var name = ['camel']
 
 def StringToParts(word: string): list<string>
     var parts = word
-                \ ->substitute('\C\v([[:lower:]])([[:upper:]])', '\1-\2', 'g')
-                \ ->substitute('\C\v([[:upper:]])([[:upper:]][[:lower:]])', '\1-\2', 'g')
-                \ ->split('-')
+        ->substitute('\C\v([[:lower:]])([[:upper:]])', '\1-\2', 'g')
+        ->substitute('\C\v([[:upper:]])([[:upper:]][[:lower:]])', '\1-\2', 'g')
+        ->split('-')
 
     return parts->map(func.MapToLowerIfNotUpper)
 enddef

@@ -139,10 +139,10 @@ def GetWordGroup(word: string): string
     if (word->len() < 2)
         return groups.letter
     elseif (
-      \    word =~# '\v\C^[[:upper:][:digit:]]+$' 
-      \ || word =~# '\v\C^[[:lower:][:digit:]]+$'
-      \ || word =~# '\v\C^[[:upper:]][[:lower:][:digit:]]+$'
-      \ )
+        word =~# '\v\C^[[:upper:][:digit:]]+$' 
+        || word =~# '\v\C^[[:lower:][:digit:]]+$'
+        || word =~# '\v\C^[[:upper:]][[:lower:][:digit:]]+$'
+    )
         # if only upper or digits or only lower and digits - this is single word
         return groups.word
     endif
