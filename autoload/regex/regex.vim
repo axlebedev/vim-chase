@@ -13,6 +13,8 @@
 " 4. (In 'autoload/regex/regex') Add new '...#case' to 'casesArrays'
 " 5. (In vimrc) Add new case to corresponding casesOrder
 
+import '../getconfig.vim' 
+
 call func#init()
 
 let s:groups = {
@@ -107,11 +109,11 @@ endfunction
 
 function! s:GetCasesOrderByGroup(group) abort
     if (a:group == s:groups.letter)
-        return getconfig#GetConfig('letterCasesOrder')
+        return s:getconfig.GetConfig('letterCasesOrder')
     elseif (a:group == s:groups.word)
-        return getconfig#GetConfig('wordCasesOrder')
+        return s:getconfig.GetConfig('wordCasesOrder')
     endif
-    return getconfig#GetConfig('sentenceCasesOrder')
+    return s:getconfig.GetConfig('sentenceCasesOrder')
 endfunction
 
 function! s:GetNextCase(group, oldCase, d) abort

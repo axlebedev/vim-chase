@@ -1,3 +1,5 @@
+import './getconfig.vim'
+
 let s:savedIskeyword = &iskeyword
 let s:sessionStarted = 0
 let s:startingMode = 'n'
@@ -53,7 +55,7 @@ function! sessioncontroller#SessionControllerEndRun() abort
     call setpos("'<", [0, line('.'), s:savedVisualSelection.start])
     call setpos("'>", [0, line('.'), s:savedVisualSelection.end])
     call setpos(".", [0, line('.'), s:savedVisualSelection.end])
-    let highlightTimeout = getconfig#GetConfig('highlightTimeout')
+    let highlightTimeout = s:getconfig.GetConfig('highlightTimeout')
     let s:highlightTimer = timer_start(highlightTimeout, 'highlightdiff#ClearHighlights')
     if (highlightTimeout)
         let s:gvTimer = timer_start(highlightTimeout, function('GV'))
