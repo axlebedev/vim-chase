@@ -10,11 +10,11 @@ def StringToParts(word: string): list<string>
         \ ->substitute('\C[^[:digit:][:lower:][:upper:]]', '-', 'g')
         \ ->split('-')
 
-    return parts->map(funcref(func.MapToLowerIfNotUpper))
+    return parts->map(func.MapToLowerIfNotUpper)
 enddef
 
 def PartsToString(parts: list<string>): string
-    return parts->map(funcref(func.MapToLower))->join('-')
+    return parts->map(func.MapToLower)->join('-')
 enddef
 
 # export var regex#case#lower_dash#case = {

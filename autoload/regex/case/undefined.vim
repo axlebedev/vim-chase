@@ -10,7 +10,7 @@ def StringToParts(word: string): list<string>
                 \ ->substitute('\C[^[:digit:][:lower:][:upper:]]', '-', 'g')
                 \ ->split('-')
 
-    return parts->map(funcref(func.MapToLowerIfNotUpper))
+    return parts->map(func.MapToLowerIfNotUpper)
 enddef
 
 def PartsToString(parts: list<string>): string

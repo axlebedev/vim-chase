@@ -10,11 +10,11 @@ def StringToParts(word: string): list<string>
         \ ->substitute('\C[^[:digit:][:lower:][:upper:]]', '_', 'g')
         \ ->split('_')
 
-    return parts->map(funcref(func.MapToLowerIfNotUpper))
+    return parts->map(func.MapToLowerIfNotUpper)
 enddef
 
 def PartsToString(parts: list<string>): string
-    return parts->map(funcref(func.MapToLower))->join('_')
+    return parts->map(func.MapToLower)->join('_')
 enddef
 
 export var lower_underscore = {

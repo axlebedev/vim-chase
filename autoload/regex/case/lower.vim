@@ -6,11 +6,11 @@ var sentenceLower = '\v\C^[[:lower:][:digit:]]+$'
 var name = ['lower']
 
 def StringToParts(word: string): list<string>
-    return [word]->map(funcref(func.MapToLower))
+    return [word]->map(func.MapToLower)
 enddef
 
 def PartsToString(parts: list<string>): string
-    return parts->map(funcref(func.MapToLower))->join('-')
+    return parts->map(func.MapToLower)->join('-')
 enddef
 
 export var lower = {

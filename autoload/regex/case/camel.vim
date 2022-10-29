@@ -11,11 +11,11 @@ def StringToParts(word: string): list<string>
                 \ ->substitute('\C\v([[:upper:]])([[:upper:]][[:lower:]])', '\1-\2', 'g')
                 \ ->split('-')
 
-    return parts->map(funcref(func.MapToLowerIfNotUpper))
+    return parts->map(func.MapToLowerIfNotUpper)
 enddef
 
 def PartsToString(parts: list<string>): string
-    return (parts[0 : 0]->map(funcref(func.MapToLower)) + parts[1 :]->map(funcref(func.MapToCapital)))->join('')
+    return (parts[0 : 0]->map(func.MapToLower) + parts[1 :]->map(func.MapToCapital))->join('')
 enddef
 
 export var camel = {

@@ -10,11 +10,11 @@ def StringToParts(word: string): list<string>
         \ ->substitute('\C[^[:digit:][:lower:][:upper:]]', '_', 'g')
         \ ->split('_')
 
-    return parts->map(funcref(func.MapToLower))
+    return parts->map(func.MapToLower)
 enddef
 
 def PartsToString(parts: list<string>): string
-    return parts->map(funcref(func.MapToUpper))->join(' ')
+    return parts->map(func.MapToUpper)->join(' ')
 enddef
 
 export var upper_space = {
