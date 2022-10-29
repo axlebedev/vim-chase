@@ -19,8 +19,8 @@ def PartsToString(parts: list<string>): string
 enddef
 
 export var pascal = {
-  \ 'name': name,
-  \ 'regex': sentencePascal,
-  \ 'StringToParts': function('StringToParts'),
-  \ 'PartsToString': function('PartsToString'),
-  \ }
+    name: name,
+    regex: sentencePascal,
+    StringToParts: function('StringToParts'),
+    PartsToString: function('PartsToString'),
+}

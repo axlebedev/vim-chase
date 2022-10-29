@@ -14,8 +14,8 @@ def PartsToString(parts: list<string>): string
 enddef
 
 export var lower = {
-  \ 'name': name,
-  \ 'regex': sentenceLower,
-  \ 'StringToParts': function('StringToParts'),
-  \ 'PartsToString': function('PartsToString'),
-  \ }
+    name: name,
+    regex: sentenceLower,
+    StringToParts: function('StringToParts'),
+    PartsToString: function('PartsToString'),
+}

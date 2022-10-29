@@ -18,8 +18,8 @@ def PartsToString(parts: list<string>): string
 enddef
 
 export var lower_underscore = {
-  \ 'name': name,
-  \ 'regex': sentenceSnake,
-  \ 'StringToParts': function('StringToParts'),
-  \ 'PartsToString': function('PartsToString'),
-  \ }
+    name: name,
+    regex: sentenceSnake,
+    StringToParts: function('StringToParts'),
+    PartsToString: function('PartsToString'),
+}

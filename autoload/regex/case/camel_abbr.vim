@@ -19,8 +19,8 @@ def PartsToString(parts: list<string>): string
 enddef
 
 export var camel_abbr = {
-  \ 'name': name,
-  \ 'regex': sentenceCamel,
-  \ 'StringToParts': function('StringToParts'),
-  \ 'PartsToString': function('PartsToString'),
-  \ }
+    name: name,
+    regex: sentenceCamel,
+    StringToParts: function('StringToParts'),
+    PartsToString: function('PartsToString'),
+}

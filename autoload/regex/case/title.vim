@@ -18,8 +18,8 @@ def PartsToString(parts: list<string>): string
 enddef
 
 export var title = {
-  \ 'name': name,
-  \ 'regex': sentenceTitle,
-  \ 'StringToParts': function('StringToParts'),
-  \ 'PartsToString': function('PartsToString'),
-  \ }
+    name: name,
+    regex: sentenceTitle,
+    StringToParts: function('StringToParts'),
+    PartsToString: function('PartsToString'),
+}

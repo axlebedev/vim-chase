@@ -18,8 +18,8 @@ def PartsToString(parts: list<string>): string
 enddef
 
 export var upper_space = {
-  \ 'name': name,
-  \ 'regex': sentenceUpper,
-  \ 'StringToParts': function('StringToParts'),
-  \ 'PartsToString': function('PartsToString'),
-  \ }
+    name: name,
+    regex: sentenceUpper,
+    StringToParts: function('StringToParts'),
+    PartsToString: function('PartsToString'),
+}

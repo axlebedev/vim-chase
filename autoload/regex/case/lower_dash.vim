@@ -19,8 +19,8 @@ enddef
 
 # export var regex#case#lower_dash#case = {
 export var lower_dash = {
-  \ 'name': name,
-  \ 'regex': sentenceDash,
-  \ 'StringToParts': function('StringToParts'),
-  \ 'PartsToString': function('PartsToString'),
-  \ }
+    name: name,
+    regex: sentenceDash,
+    StringToParts: function('StringToParts'),
+    PartsToString: function('PartsToString'),
+}
