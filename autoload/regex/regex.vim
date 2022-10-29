@@ -14,6 +14,7 @@
 " 5. (In vimrc) Add new case to corresponding casesOrder
 
 import '../getconfig.vim' 
+import './case/lower_dash.vim'
 
 call func#init()
 
@@ -46,7 +47,6 @@ call regex#case#lower#init()
 call regex#case#upper#init()
 call regex#case#camel#init()
 call regex#case#camel_abbr#init()
-call regex#case#lower_dash#init()
 call regex#case#lower_underscore#init()
 call regex#case#pascal#init()
 call regex#case#title#init()
@@ -66,7 +66,7 @@ let s:casesArrays = {
 \ 'sentence': [
 \     regex#case#camel#case,
 \     regex#case#camel_abbr#case,
-\     regex#case#lower_dash#case,
+\     s:lower_dash.lower_dash,
 \     regex#case#lower_underscore#case,
 \     regex#case#pascal#case,
 \     regex#case#title#case,

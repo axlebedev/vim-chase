@@ -1,24 +1,24 @@
-let s:sentenceDash = '\v\C^[[:lower:][:digit:]]+(-+[[:lower:][:digit:]]+)+$'
-let s:name = ['dash', 'kebab', 'hyphen', 'lower_dash', 'lower_hyphen']
+vim9script
 
-function! s:StringToParts(word) abort
-    let parts = a:word
+var sentenceDash = '\v\C^[[:lower:][:digit:]]+(-+[[:lower:][:digit:]]+)+$'
+var name = ['dash', 'kebab', 'hyphen', 'lower_dash', 'lower_hyphen']
+
+def StringToParts(word: string): list<string>
+    var parts = word
         \ ->substitute('\C[^[:digit:][:lower:][:upper:]]', '-', 'g')
         \ ->split('-')
 
     return parts->map(funcref('func#MapToLowerIfNotUpper'))
-endfunction
+enddef
 
-function! s:PartsToString(parts) abort
-    return a:parts->map(funcref('func#MapToLower'))->join('-')
-endfunction
+def PartsToString(parts: list<string>): string
+    return parts->map(funcref('func#MapToLower'))->join('-')
+enddef
 
-let regex#case#lower_dash#case = {
-  \ 'name': s:name,
-  \ 'regex': s:sentenceDash,
-  \ 'StringToParts': function('s:StringToParts'),
-  \ 'PartsToString': function('s:PartsToString'),
+# export var regex#case#lower_dash#case = {
+export var lower_dash = {
+  \ 'name': name,
+  \ 'regex': sentenceDash,
+  \ 'StringToParts': function('StringToParts'),
+  \ 'PartsToString': function('PartsToString'),
   \ }
-
-function! regex#case#lower_dash#init() abort
-endfunction
