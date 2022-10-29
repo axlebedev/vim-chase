@@ -23,6 +23,7 @@
 import './getconfig.vim'
 import './regex/regex.vim'
 import './sessioncontroller.vim'
+import './highlightdiff.vim'
 
 function! s:GetSelectionColumns() abort
     let pos1 = getpos('v')[2]
@@ -72,7 +73,7 @@ function! s:ReplaceWithNext(isPrev) abort
     call setline('.', s:GetCurrentLineWithReplacedSelection(newWord))
 
     if (s:getconfig.GetConfig('highlightTimeout'))
-        call highlightdiff#HighlightDiff(oldWord, newWord)
+        call highlightdiff.HighlightDiff(oldWord, newWord)
     endif
     call sessioncontroller.SessionControllerEndRun()
 endfunction

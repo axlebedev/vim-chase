@@ -2,6 +2,7 @@ vim9script
 
 import './getconfig.vim'
 import './regex/regex.vim'
+import './highlightdiff.vim'
 
 var savedIskeyword = &iskeyword
 var sessionStarted = 0
@@ -38,7 +39,7 @@ enddef
 export def SessionControllerStartRun(): bool
     if (sessionStarted)
         undojoin
-        highlightdiff#ClearHighlights()
+        highlightdiff.ClearHighlights()
         ResetSessionEndTrigger()
     else # if (!sessionStarted)
         startingMode = mode()
@@ -59,7 +60,7 @@ export def SessionControllerEndRun(): void
     setpos("'>", [0, line('.'), savedVisualSelection.end])
     setpos(".", [0, line('.'), savedVisualSelection.end])
     var highlightTimeout = getconfig.GetConfig('highlightTimeout')
-    highlightTimer = timer_start(highlightTimeout, 'highlightdiff#ClearHighlights')
+    highlightTimer = timer_start(highlightTimeout, highlightdiff.ClearHighlights)
     if (highlightTimeout > 0)
         gvTimer = timer_start(highlightTimeout, function('GV'))
     else
@@ -74,7 +75,7 @@ def SessionControllerReset(): void
     if (startingMode == 'n')
         execute "normal! \<Esc>"
     endif
-    highlightdiff#ClearHighlights()
+    highlightdiff.ClearHighlights()
     &iskeyword = savedIskeyword
     regex.OnSessionEnd()
     ResetSessionEndTrigger()
