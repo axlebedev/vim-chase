@@ -22,6 +22,7 @@ vim9script
 #       научились работать с повторами
 # 16.   Добавить конфиг цветов WARN! autocmd ColorScheme * \ highlight ChaseWord guibg=#0000FF
 # 17.   Если очень быстро нажимать '~' - то неправильно работает хайлайт: он пропадает и не появляется заново
+# 18.   Опять сходит с умма на русских символах
 
 import './getconfig.vim'
 import './regex/regex.vim'
