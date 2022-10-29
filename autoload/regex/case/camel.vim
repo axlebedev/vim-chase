@@ -1,25 +1,24 @@
-let s:sentenceCamel = '\v\C^[[:lower:]][[:lower:][:digit:]]*([[:upper:]][[:lower:][:digit:]]+)+$'
-let s:name = ['camel']
+vim9script
 
-function! s:StringToParts(word) abort
-    let parts = a:word
+var sentenceCamel = '\v\C^[[:lower:]][[:lower:][:digit:]]*([[:upper:]][[:lower:][:digit:]]+)+$'
+var name = ['camel']
+
+def StringToParts(word: string): list<string>
+    var parts = word
                 \ ->substitute('\C\v([[:lower:]])([[:upper:]])', '\1-\2', 'g')
                 \ ->substitute('\C\v([[:upper:]])([[:upper:]][[:lower:]])', '\1-\2', 'g')
                 \ ->split('-')
 
     return parts->map(funcref('func#MapToLowerIfNotUpper'))
-endfunction
+enddef
 
-function! s:PartsToString(parts) abort
-    return (a:parts[0:0]->map(funcref('func#MapToLower'))+a:parts[1:]->map(funcref('func#MapToCapital')))->join('')
-endfunction
+def PartsToString(parts: list<string>): string
+    return (parts[0 : 0]->map(funcref('func#MapToLower')) + parts[1 :]->map(funcref('func#MapToCapital')))->join('')
+enddef
 
-let regex#case#camel#case = {
-  \ 'name': s:name,
-  \ 'regex': s:sentenceCamel,
-  \ 'StringToParts': function('s:StringToParts'),
-  \ 'PartsToString': function('s:PartsToString'),
+export var camel = {
+  \ 'name': name,
+  \ 'regex': sentenceCamel,
+  \ 'StringToParts': function('StringToParts'),
+  \ 'PartsToString': function('PartsToString'),
   \ }
-
-function! regex#case#camel#init() abort
-endfunction

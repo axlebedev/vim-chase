@@ -1,25 +1,24 @@
-let s:sentencePascal = '\v\C^[[:upper:]]+[[:lower:][:digit:]]*([[:upper:][:digit:]]+[[:lower:][:digit:]]+)+[[:upper:]]*$'
-let s:name = ['pascal']
+vim9script
 
-function! s:StringToParts(word) abort
-    let parts = a:word
+var sentencePascal = '\v\C^[[:upper:]]+[[:lower:][:digit:]]*([[:upper:][:digit:]]+[[:lower:][:digit:]]+)+[[:upper:]]*$'
+var name = ['pascal']
+
+def StringToParts(word: string): list<string>
+    var parts = word
                 \ ->substitute('\C\v([[:lower:]])([[:upper:]])', '\1-\2', 'g')
                 \ ->substitute('\C\v([[:upper:]])([[:upper:]][[:lower:]])', '\1-\2', 'g')
                 \ ->split('-')
 
     return parts->map(funcref('func#MapToLowerIfNotUpper'))
-endfunction
+enddef
 
-function! s:PartsToString(parts) abort
-    return a:parts->map(funcref('func#MapToCapital'))->join('')
-endfunction
+def PartsToString(parts: list<string>): string
+    return parts->map(funcref('func#MapToCapital'))->join('')
+enddef
 
-let regex#case#pascal#case = {
-  \ 'name': s:name,
-  \ 'regex': s:sentencePascal,
-  \ 'StringToParts': function('s:StringToParts'),
-  \ 'PartsToString': function('s:PartsToString'),
+export var pascal = {
+  \ 'name': name,
+  \ 'regex': sentencePascal,
+  \ 'StringToParts': function('StringToParts'),
+  \ 'PartsToString': function('PartsToString'),
   \ }
-
-function! regex#case#pascal#init() abort
-endfunction

@@ -14,7 +14,18 @@
 " 5. (In vimrc) Add new case to corresponding casesOrder
 
 import '../getconfig.vim' 
+
+import './case/camel.vim'
+import './case/camel_abbr.vim'
+import './case/lower.vim'
 import './case/lower_dash.vim'
+import './case/lower_underscore.vim'
+import './case/pascal.vim'
+import './case/title.vim'
+import './case/undefined.vim' as undefinedCase
+import './case/upper.vim'
+import './case/upper_space.vim'
+import './case/upper_underscore.vim'
 
 call func#init()
 
@@ -43,37 +54,27 @@ endfunction
 
 " =============================================================================
 
-call regex#case#lower#init()
-call regex#case#upper#init()
-call regex#case#camel#init()
-call regex#case#camel_abbr#init()
-call regex#case#lower_underscore#init()
-call regex#case#pascal#init()
-call regex#case#title#init()
-call regex#case#undefined#init()
-call regex#case#upper_underscore#init()
-call regex#case#upper_space#init()
 let s:casesArrays = {
 \ 'letter': [
-\     regex#case#lower#case,
-\     regex#case#upper#case
+\     s:lower.lower,
+\     s:upper.upper
 \ ],
 \ 'word': [
-\     regex#case#lower#case,
-\     regex#case#upper#case,
-\     regex#case#title#case
+\     s:lower.lower,
+\     s:upper.upper,
+\     s:title.title
 \ ],
 \ 'sentence': [
-\     regex#case#camel#case,
-\     regex#case#camel_abbr#case,
+\     s:camel.camel,
+\     s:camel_abbr.camel_abbr,
 \     s:lower_dash.lower_dash,
-\     regex#case#lower_underscore#case,
-\     regex#case#pascal#case,
-\     regex#case#title#case,
-\     regex#case#upper_underscore#case,
-\     regex#case#upper_space#case,
+\     s:lower_underscore.lower_underscore,
+\     s:pascal.pascal,
+\     s:title.title,
+\     s:upper_underscore.upper_underscore,
+\     s:upper_space.upper_space,
 \ ],
-\ 'undefined': [regex#case#undefined#case],
+\ 'undefined': [s:undefinedCase.undefinedCase],
 \ }
 
 " =============================================================================
@@ -104,7 +105,7 @@ function! s:FindCaseByName(name, group)
             let i += 1
         endwhile
     endif
-    return g:regex#case#undefined#case
+    return s:undefinedCase.undefinedCase
 endfunction
 
 function! s:GetCasesOrderByGroup(group) abort
@@ -151,7 +152,7 @@ function! s:GetWordGroup(word) abort
 endfunction
 
 function! s:GetWordCase(word, group) abort
-    let cases = [g:regex#case#undefined#case]
+    let cases = [s:undefinedCase.undefinedCase]
     if (a:group == s:groups.letter)
         let cases = s:casesArrays.letter
     elseif (a:group == s:groups.word)
@@ -168,7 +169,7 @@ function! s:GetWordCase(word, group) abort
         let i += 1
     endwhile
 
-    return g:regex#case#undefined#case
+    return s:undefinedCase.undefinedCase
 endfunction
 
 function! regex#regex#GetNextWord(oldWord, isPrev) abort

@@ -1,20 +1,19 @@
-let s:sentenceUpper = '\v\C^[[:upper:][:digit:]]+$'
-let s:name = ['upper']
+vim9script
 
-function! s:StringToParts(word) abort
-    return [a:word]->map(funcref('func#MapToLower'))
-endfunction
+var sentenceUpper = '\v\C^[[:upper:][:digit:]]+$'
+var name = ['upper']
 
-function! s:PartsToString(parts) abort
-    return a:parts->map(funcref('func#MapToUpper'))->join('-')
-endfunction
+def StringToParts(word: string): list<string>
+    return [word]->map(funcref('func#MapToLower'))
+enddef
 
-let regex#case#upper#case = {
-  \ 'name': s:name,
-  \ 'regex': s:sentenceUpper,
-  \ 'StringToParts': function('s:StringToParts'),
-  \ 'PartsToString': function('s:PartsToString'),
+def PartsToString(parts: list<string>): string
+    return parts->map(funcref('func#MapToUpper'))->join('-')
+enddef
+
+export var upper = {
+  \ 'name': name,
+  \ 'regex': sentenceUpper,
+  \ 'StringToParts': function('StringToParts'),
+  \ 'PartsToString': function('PartsToString'),
   \ }
-
-function! regex#case#upper#init() abort
-endfunction
