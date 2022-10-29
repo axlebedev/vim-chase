@@ -1,79 +1,81 @@
+vim9script 
+
 import './getconfig.vim'
 import './regex/regex.vim'
 
-let s:savedIskeyword = &iskeyword
-let s:sessionStarted = 0
-let s:startingMode = 'n'
-let s:highlightTimer = 0
+var savedIskeyword = &iskeyword
+var sessionStarted = 0
+var startingMode = 'n'
+var highlightTimer = 0
 
-let s:savedVisualSelection = { 'start': 0, 'end': 0 }
-let s:gvTimer = 0
-function! GV(...) abort
-    call timer_stop(s:gvTimer)
-    let s:gvTimer = 0
+var savedVisualSelection = { 'start': 0, 'end': 0 }
+var gvTimer = 0
+def GV(): void
+    timer_stop(gvTimer)
+    gvTimer = 0
 
-    call setpos("'<", [0, line('.'), s:savedVisualSelection.start])
-    call setpos("'>", [0, line('.'), s:savedVisualSelection.end])
+    setpos("'<", [0, line('.'), savedVisualSelection.start])
+    setpos("'>", [0, line('.'), savedVisualSelection.end])
     normal! gv
-endfunc
-function! sessioncontroller#SetVisualSelection(selection) abort
-    let s:savedVisualSelection = a:selection
-endfunction
+enddef
+export def SetVisualSelection(selection: dict<number>): void
+    savedVisualSelection = selection
+enddef
 
-function! s:ResetSessionEndTrigger() abort
+def ResetSessionEndTrigger(): void
     augroup au_vimchase
         autocmd!
     augroup END
-endfunction
+enddef
 
-function! s:SetSessionEndTrigger() abort
+def SetSessionEndTrigger(): void
     augroup au_vimchase
         autocmd!
-        autocmd CursorMoved * call sessioncontroller#SessionControllerReset()
+        autocmd CursorMoved * SessionControllerReset()
     augroup END
-endfunction
+enddef
 
-function! sessioncontroller#SessionControllerStartRun() abort
-    if (s:sessionStarted)
+export def SessionControllerStartRun(): bool
+    if (sessionStarted)
         undojoin
-        call highlightdiff#ClearHighlights()
-        call s:ResetSessionEndTrigger()
-    else " if (!s:sessionStarted)
-        let s:startingMode = mode()
-        let s:savedIskeyword = &iskeyword
+        highlightdiff#ClearHighlights()
+        ResetSessionEndTrigger()
+    else # if (!sessionStarted)
+        startingMode = mode()
+        savedIskeyword = &iskeyword
         set iskeyword+=-
     endif
-    let oldSessionStarted = s:sessionStarted
-    let s:sessionStarted = 1
-    call timer_start(10, { -> s:SetSessionEndTrigger() })
-    if (s:gvTimer)
-        call GV()
+    var oldSessionStarted = sessionStarted
+    sessionStarted = 1
+    timer_start(10, (timerId: number) => SetSessionEndTrigger() )
+    if (gvTimer > 0)
+        GV()
     endif
     return oldSessionStarted
-endfunction
+enddef
 
-function! sessioncontroller#SessionControllerEndRun() abort
-    call setpos("'<", [0, line('.'), s:savedVisualSelection.start])
-    call setpos("'>", [0, line('.'), s:savedVisualSelection.end])
-    call setpos(".", [0, line('.'), s:savedVisualSelection.end])
-    let highlightTimeout = s:getconfig.GetConfig('highlightTimeout')
-    let s:highlightTimer = timer_start(highlightTimeout, 'highlightdiff#ClearHighlights')
-    if (highlightTimeout)
-        let s:gvTimer = timer_start(highlightTimeout, function('GV'))
+export def SessionControllerEndRun(): void
+    setpos("'<", [0, line('.'), savedVisualSelection.start])
+    setpos("'>", [0, line('.'), savedVisualSelection.end])
+    setpos(".", [0, line('.'), savedVisualSelection.end])
+    var highlightTimeout = getconfig.GetConfig('highlightTimeout')
+    highlightTimer = timer_start(highlightTimeout, 'highlightdiff#ClearHighlights')
+    if (highlightTimeout > 0)
+        gvTimer = timer_start(highlightTimeout, function('GV'))
     else
-        call GV()
+        GV()
     endif
-endfunction
+enddef
 
-function! sessioncontroller#SessionControllerReset() abort
-    let s:sessionStarted = 0
-    call timer_stop(s:gvTimer)
-    let s:gvTimer = 0
-    if (s:startingMode == 'n')
+def SessionControllerReset(): void
+    sessionStarted = 0
+    timer_stop(gvTimer)
+    gvTimer = 0
+    if (startingMode == 'n')
         execute "normal! \<Esc>"
     endif
-    call highlightdiff#ClearHighlights()
-    let &iskeyword = s:savedIskeyword
-    call s:regex.OnSessionEnd()
-    call s:ResetSessionEndTrigger()
-endfunction
+    highlightdiff#ClearHighlights()
+    &iskeyword = savedIskeyword
+    regex.OnSessionEnd()
+    ResetSessionEndTrigger()
+enddef

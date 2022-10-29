@@ -22,6 +22,7 @@
 
 import './getconfig.vim'
 import './regex/regex.vim'
+import './sessioncontroller.vim'
 
 function! s:GetSelectionColumns() abort
     let pos1 = getpos('v')[2]
@@ -61,19 +62,19 @@ function! s:GetCurrentLineWithReplacedSelection(argument) abort
 endfunction
 
 function! s:ReplaceWithNext(isPrev) abort
-    call sessioncontroller#SessionControllerStartRun()
+    call sessioncontroller.SessionControllerStartRun()
 
     let oldWord = s:GetSelectionWord()
     let selectionColumns = s:GetSelectionColumns()
     let newWord = s:regex.GetNextWord(oldWord, a:isPrev)
 
-    call sessioncontroller#SetVisualSelection({ 'start': selectionColumns.start + 1, 'end': selectionColumns.start + len(newWord) })
+    call sessioncontroller.SetVisualSelection({ 'start': selectionColumns.start + 1, 'end': selectionColumns.start + len(newWord) })
     call setline('.', s:GetCurrentLineWithReplacedSelection(newWord))
 
     if (s:getconfig.GetConfig('highlightTimeout'))
         call highlightdiff#HighlightDiff(oldWord, newWord)
     endif
-    call sessioncontroller#SessionControllerEndRun()
+    call sessioncontroller.SessionControllerEndRun()
 endfunction
 
 function! chase#next() abort
