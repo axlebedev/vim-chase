@@ -11,7 +11,7 @@ var highlightTimer = 0
 
 var savedVisualSelection = { 'start': 0, 'end': 0 }
 var gvTimer = 0
-def GV(): void
+def GV(timerId: number = 0): void
     timer_stop(gvTimer)
     gvTimer = 0
 
@@ -62,7 +62,7 @@ export def SessionControllerEndRun(): void
     var highlightTimeout = getconfig.GetConfig('highlightTimeout')
     highlightTimer = timer_start(highlightTimeout, highlightdiff.ClearHighlights)
     if (highlightTimeout > 0)
-        gvTimer = timer_start(highlightTimeout, function('GV'))
+        gvTimer = timer_start(highlightTimeout, GV)
     else
         GV()
     endif
