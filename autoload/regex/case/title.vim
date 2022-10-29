@@ -20,6 +20,6 @@ enddef
 export var title = {
     name: name,
     regex: sentenceTitle,
-    StringToParts: function('StringToParts'),
-    PartsToString: function('PartsToString'),
+    StringToParts: StringToParts,
+    PartsToString: PartsToString,
 }

@@ -21,6 +21,6 @@ enddef
 export var lower_dash = {
     name: name,
     regex: sentenceDash,
-    StringToParts: function('StringToParts'),
-    PartsToString: function('PartsToString'),
+    StringToParts: StringToParts,
+    PartsToString: PartsToString,
 }

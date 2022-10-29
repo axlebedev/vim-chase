@@ -21,6 +21,6 @@ enddef
 export var camel_abbr = {
     name: name,
     regex: sentenceCamel,
-    StringToParts: function('StringToParts'),
-    PartsToString: function('PartsToString'),
+    StringToParts: StringToParts,
+    PartsToString: PartsToString,
 }

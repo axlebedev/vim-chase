@@ -20,6 +20,6 @@ enddef
 export var undefinedCase = {
     name: name,
     regex: sentenceUndefined,
-    StringToParts: function('StringToParts'),
-    PartsToString: function('PartsToString'),
+    StringToParts: StringToParts,
+    PartsToString: PartsToString,
 }

@@ -16,6 +16,6 @@ enddef
 export var lower = {
     name: name,
     regex: sentenceLower,
-    StringToParts: function('StringToParts'),
-    PartsToString: function('PartsToString'),
+    StringToParts: StringToParts,
+    PartsToString: PartsToString,
 }

@@ -16,6 +16,6 @@ enddef
 export var upper = {
     name: name,
     regex: sentenceUpper,
-    StringToParts: function('StringToParts'),
-    PartsToString: function('PartsToString'),
+    StringToParts: StringToParts,
+    PartsToString: PartsToString,
 }

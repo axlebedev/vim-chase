@@ -20,6 +20,6 @@ enddef
 export var lower_underscore = {
     name: name,
     regex: sentenceSnake,
-    StringToParts: function('StringToParts'),
-    PartsToString: function('PartsToString'),
+    StringToParts: StringToParts,
+    PartsToString: PartsToString,
 }

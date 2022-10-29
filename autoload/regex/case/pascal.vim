@@ -21,6 +21,6 @@ enddef
 export var pascal = {
     name: name,
     regex: sentencePascal,
-    StringToParts: function('StringToParts'),
-    PartsToString: function('PartsToString'),
+    StringToParts: StringToParts,
+    PartsToString: PartsToString,
 }

@@ -20,6 +20,6 @@ enddef
 export var upper_underscore = {
     name: name,
     regex: sentenceUpper,
-    StringToParts: function('StringToParts'),
-    PartsToString: function('PartsToString'),
+    StringToParts: StringToParts,
+    PartsToString: PartsToString,
 }
