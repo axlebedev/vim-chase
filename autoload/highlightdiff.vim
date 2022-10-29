@@ -1,6 +1,6 @@
 vim9script
 
-var highlightsDeclared = 0
+var highlightsDeclared = false
 def DeclareHighlightGroups(): void
     # highlights may be declared in vim config
     if (!hlexists('ChaseWord'))
@@ -12,7 +12,7 @@ def DeclareHighlightGroups(): void
     if (!hlexists('ChaseChangedvarter'))
         highlight ChaseChangedvarter guibg=#99FF99
     endif
-    highlightsDeclared = 1
+    highlightsDeclared = true
 enddef
 
 def GetCharAtIndex(str: string, index: number): string

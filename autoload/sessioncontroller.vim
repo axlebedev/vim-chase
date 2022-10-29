@@ -5,7 +5,7 @@ import './regex/regex.vim'
 import './highlightdiff.vim'
 
 var savedIskeyword = &iskeyword
-var sessionStarted = 0
+var sessionStarted = false
 var startingMode = 'n'
 var highlightTimer = 0
 
@@ -47,7 +47,7 @@ export def SessionControllerStartRun(): bool
         set iskeyword+=-
     endif
     var oldSessionStarted = sessionStarted
-    sessionStarted = 1
+    sessionStarted = true
     timer_start(10, (timerId: number) => SetSessionEndTrigger() )
     if (gvTimer > 0)
         GV()
@@ -69,7 +69,7 @@ export def SessionControllerEndRun(): void
 enddef
 
 def SessionControllerReset(): void
-    sessionStarted = 0
+    sessionStarted = false
     timer_stop(gvTimer)
     gvTimer = 0
     if (startingMode == 'n')

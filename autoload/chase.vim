@@ -85,9 +85,9 @@ def ReplaceWithNext(isPrev: bool): void
 enddef
 
 export def Next(): void
-    ReplaceWithNext(0)
+    ReplaceWithNext(false)
 enddef
 
 export def Prev(): void
-    ReplaceWithNext(1)
+    ReplaceWithNext(true)
 enddef
