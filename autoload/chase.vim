@@ -20,7 +20,8 @@
 "       научились работать с повторами
 " 16.   Добавить конфиг цветов WARN! autocmd ColorScheme * \ highlight ChaseWord guibg=#0000FF
 
-import './getconfig.vim' 
+import './getconfig.vim'
+import './regex/regex.vim'
 
 function! s:GetSelectionColumns() abort
     let pos1 = getpos('v')[2]
@@ -64,7 +65,7 @@ function! s:ReplaceWithNext(isPrev) abort
 
     let oldWord = s:GetSelectionWord()
     let selectionColumns = s:GetSelectionColumns()
-    let newWord = regex#regex#GetNextWord(oldWord, a:isPrev)
+    let newWord = s:regex.GetNextWord(oldWord, a:isPrev)
 
     call sessioncontroller#SetVisualSelection({ 'start': selectionColumns.start + 1, 'end': selectionColumns.start + len(newWord) })
     call setline('.', s:GetCurrentLineWithReplacedSelection(newWord))

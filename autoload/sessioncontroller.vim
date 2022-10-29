@@ -1,4 +1,5 @@
 import './getconfig.vim'
+import './regex/regex.vim'
 
 let s:savedIskeyword = &iskeyword
 let s:sessionStarted = 0
@@ -73,6 +74,6 @@ function! sessioncontroller#SessionControllerReset() abort
     endif
     call highlightdiff#ClearHighlights()
     let &iskeyword = s:savedIskeyword
-    call regex#regex#OnSessionEnd()
+    call s:regex.OnSessionEnd()
     call s:ResetSessionEndTrigger()
 endfunction
