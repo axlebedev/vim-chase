@@ -47,7 +47,7 @@ var sessionCount = 0
 export def OnSessionEnd(): void
     savedParts = []
     savedGroup = groups.undefined
-    savedCase = 0
+    savedCase = undefinedCase.undefinedCase
     sessionCount = 0
 enddef
 
