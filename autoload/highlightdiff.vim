@@ -9,8 +9,8 @@ def DeclareHighlightGroups(): void
     if (!hlexists('ChaseSeparator'))
         highlight ChaseSeparator guibg=#FF9999
     endif
-    if (!hlexists('ChaseChangedvarter'))
-        highlight ChaseChangedvarter guibg=#99FF99
+    if (!hlexists('ChaseChangedletter'))
+        highlight ChaseChangedletter guibg=#99FF99
     endif
     highlightsDeclared = true
 enddef
@@ -20,7 +20,7 @@ def GetCharAtIndex(str: string, index: number): string
     return nr2char(charnr)
 enddef
 
-# Get all not-varter symbol indexes
+# Get all not-letter symbol indexes
 def GetSeparatorIndexes(word: string): list<number>
     var res = []
     var i = 0
@@ -116,7 +116,7 @@ export def HighlightDiff(oldWord: string, newWord: string): void
     var endOfWord = getpos("'>")[2]
     add(matchIds, matchadd('ChaseWord', '\%' .. curline .. 'l\%>' .. startOfWord .. 'c\%<' .. endOfWord .. 'c'))
     for i in indexes.changedletters
-        add(matchIds, matchadd('ChaseChangedvarter', '\%' .. curline .. 'l\%' .. (i + startOfWord) .. 'c'))
+        add(matchIds, matchadd('ChaseChangedletter', '\%' .. curline .. 'l\%' .. (i + startOfWord) .. 'c'))
     endfor
     for i in indexes.separator
         add(matchIds, matchadd('ChaseSeparator', '\%' .. curline .. 'l\%' .. (i + startOfWord) .. 'c'))

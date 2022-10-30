@@ -26,7 +26,7 @@ g:wordCasesOrder = get(g:, 'chaseWordCasesOrder', [
     'title',
 ])
 
-g:varterCasesOrder = get(g:, 'chasevarterCasesOrder', [
+g:letterCasesOrder = get(g:, 'chaseletterCasesOrder', [
     'upper',
     'lower',
 ])
