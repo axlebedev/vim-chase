@@ -1,122 +1,124 @@
-let s:highlightsDeclared = 0
-function! s:DeclareHighlightGroups() abort
-    " highlights may be declared in vim config
+vim9script
+
+var highlightsDeclared = false
+def DeclareHighlightGroups(): void
+    # highlights may be declared in vim config
     if (!hlexists('ChaseWord'))
         highlight ChaseWord guibg=#C7A575
     endif
     if (!hlexists('ChaseSeparator'))
         highlight ChaseSeparator guibg=#FF9999
     endif
-    if (!hlexists('ChaseChangedLetter'))
-        highlight ChaseChangedLetter guibg=#99FF99
+    if (!hlexists('ChaseChangedletter'))
+        highlight ChaseChangedletter guibg=#99FF99
     endif
-    let s:highlightsDeclared = 1
-endfunction
+    highlightsDeclared = true
+enddef
 
-function! s:GetCharAtIndex(str, index) abort
-    let charnr = strgetchar(a:str, charidx(a:str, a:index))
+def GetCharAtIndex(str: string, index: number): string
+    var charnr = strgetchar(str, charidx(str, index))
     return nr2char(charnr)
-endfunction
+enddef
 
-" Get all not-letter symbol indexes
-function! s:GetSeparatorIndexes(word) abort
-    let res = []
-    let i = 0
-    while (i < a:word->len())
-        if (s:GetCharAtIndex(a:word, i) !~? '[[:lower:][:digit:][:upper:]]')
-            call add(res, i)
+# Get all not-letter symbol indexes
+def GetSeparatorIndexes(word: string): list<number>
+    var res = []
+    var i = 0
+    while (i < word->len())
+        if (GetCharAtIndex(word, i) !~? '[[:lower:][:digit:][:upper:]]')
+            add(res, i)
         endif
-        let i += 1
+        i += 1
     endwhile
     return res
-endfunction
+enddef
 
-function! s:GetChangedIndexes(oldWord, newWord) abort
-    if (a:oldWord->len() != a:newWord->len())
+def GetChangedIndexes(oldWord: string, newWord: string): list<number>
+    if (oldWord->len() != newWord->len())
         return []
     endif
 
-    let res = []
-    let i = 0
-    while (i < a:oldWord->len())
-        let oldChar = s:GetCharAtIndex(a:oldWord, i)
-        let newChar = s:GetCharAtIndex(a:newWord, i)
+    var res = []
+    var i = 0
+    while (i < oldWord->len())
+        var oldChar = GetCharAtIndex(oldWord, i)
+        var newChar = GetCharAtIndex(newWord, i)
         if (oldChar !=# newChar)
-            call add(res, i)
+            add(res, i)
         endif
-        let i += 1
+        i += 1
     endwhile
     return res
-endfunction
+enddef
 
-" leave only letters and numbers
-function! s:GetCleanWord(word) abort
-    return a:word->substitute('\C[^[:lower:][:upper:][:digit:]]', '', 'g')
-endfunction
+# leave only letters and numbers
+def GetCleanWord(word: string): string
+    return word->substitute('\C[^[:lower:][:upper:][:digit:]]', '', 'g')
+enddef
 
-" insert separator in old word
-function! s:GetDirtyWord(oldWord, newWord) abort
-    let dirtyOldWord = copy(a:oldWord)
-    if (a:newWord->len() > a:oldWord->len()) 
-        let separatorIndexes = s:GetSeparatorIndexes(a:newWord)
-        let i = 0
+# insert separator in old word
+def GetDirtyWord(oldWord: string, newWord: string): string
+    var dirtyOldWord = copy(oldWord)
+    if (newWord->len() > oldWord->len()) 
+        var separatorIndexes = GetSeparatorIndexes(newWord)
+        var i = 0
         while (i < separatorIndexes->len())
-            let separatorIndex = separatorIndexes[i]
-            let dirtyOldWord = dirtyOldWord[0:separatorIndex-1].a:newWord[separatorIndex].dirtyOldWord[separatorIndex:]
-            let i += 1
+            var separatorIndex = separatorIndexes[i]
+            dirtyOldWord = dirtyOldWord[0 : separatorIndex - 1] .. newWord[separatorIndex] .. dirtyOldWord[separatorIndex :]
+            i += 1
         endwhile
     endif
     return dirtyOldWord
-endfunction
+enddef
 
-function! s:GetIndexesToHighlight(oldWord, newWord) abort
-    if (a:oldWord->len() > a:newWord->len())
-        let cleanOldWord = s:GetCleanWord(a:oldWord)
+def GetIndexesToHighlight(oldWord: string, newWord: string): dict<list<number>>
+    if (oldWord->len() > newWord->len())
+        var cleanOldWord = GetCleanWord(oldWord)
         return {
-          \ 'separator': [],
-          \ 'changedLetters': s:GetChangedIndexes(cleanOldWord, a:newWord) 
-      \ }
+            separator: [],
+            changedletters: GetChangedIndexes(cleanOldWord, newWord) 
+        }
     endif
 
-    let separatorIndexes = s:GetSeparatorIndexes(a:newWord)
-    if (a:oldWord->len() == a:newWord->len())
+    var separatorIndexes = GetSeparatorIndexes(newWord)
+    if (oldWord->len() == newWord->len())
         return {
-          \ 'separator': separatorIndexes,
-          \ 'changedLetters': s:GetChangedIndexes(a:oldWord, a:newWord) 
-      \ }
+            separator: separatorIndexes,
+            changedletters: GetChangedIndexes(oldWord, newWord) 
+        }
     endif
 
     return {
-          \ 'separator': separatorIndexes,
-          \ 'changedLetters': s:GetChangedIndexes(s:GetDirtyWord(a:oldWord, a:newWord), a:newWord) 
-      \ }
-endfunction
+        separator: separatorIndexes,
+        changedletters: GetChangedIndexes(GetDirtyWord(oldWord, newWord), newWord) 
+    }
+enddef
 
-let s:matchIds = []
-function! highlightdiff#ClearHighlights(...) abort
-        for id in s:matchIds
-            call matchdelete(id)
+var matchIds = []
+export def ClearHighlights(timerId: number = 0): void
+        for id in matchIds
+            matchdelete(id)
         endfor
-        let s:matchIds = []
-endfunction
+        matchIds = []
+enddef
 
-function! highlightdiff#HighlightDiff(oldWord, newWord) abort
-    if (!s:highlightsDeclared)
-        call s:DeclareHighlightGroups()
+export def HighlightDiff(oldWord: string, newWord: string): void
+    if (!highlightsDeclared)
+        DeclareHighlightGroups()
     endif
-    let indexes = s:GetIndexesToHighlight(a:oldWord, a:newWord)
+    var indexes = GetIndexesToHighlight(oldWord, newWord)
 
-    " We cant override visual selection, so go to normal mode
+    # We cant override visual selection, so go to normal mode
     execute "normal! \<Esc>"
 
-    let curline = line('.')
-    let startOfWord = getpos("'<")[2]
-    let endOfWord = getpos("'>")[2]
-    call add(s:matchIds, matchadd('ChaseWord', '\%'.curline.'l\%>'.(startOfWord).'c\%<'.(endOfWord).'c'))
-    for i in indexes.changedLetters
-        call add(s:matchIds, matchadd('ChaseChangedLetter', '\%'.curline.'l\%'.(i + startOfWord).'c'))
+    var curline = line('.')
+    var startOfWord = getpos("'<")[2]
+    var endOfWord = getpos("'>")[2]
+    add(matchIds, matchadd('ChaseWord', '\%' .. curline .. 'l\%>' .. startOfWord .. 'c\%<' .. endOfWord .. 'c'))
+    for i in indexes.changedletters
+        add(matchIds, matchadd('ChaseChangedletter', '\%' .. curline .. 'l\%' .. (i + startOfWord) .. 'c'))
     endfor
     for i in indexes.separator
-        call add(s:matchIds, matchadd('ChaseSeparator', '\%'.curline.'l\%'.(i + startOfWord).'c'))
+        add(matchIds, matchadd('ChaseSeparator', '\%' .. curline .. 'l\%' .. (i + startOfWord) .. 'c'))
     endfor
-endfunction
+enddef

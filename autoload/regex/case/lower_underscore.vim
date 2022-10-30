@@ -1,24 +1,25 @@
-let s:sentenceSnake = '\v\C^[[:lower:]][[:lower:][:digit:]]*(_[[:lower:][:digit:]]*)+$'
-let s:name = ['snake', 'lower_underscore']
+vim9script
 
-function! s:StringToParts(word) abort
-    let parts = a:word
-        \ ->substitute('\C[^[:digit:][:lower:][:upper:]]', '_', 'g')
-        \ ->split('_')
+import '../func.vim'
 
-    return parts->map(funcref('func#MapToLowerIfNotUpper'))
-endfunction
+var sentenceSnake = '\v\C^[[:lower:]][[:lower:][:digit:]]*(_[[:lower:][:digit:]]*)+$'
+var name = ['snake', 'lower_underscore']
 
-function! s:PartsToString(parts) abort
-    return a:parts->map(funcref('func#MapToLower'))->join('_')
-endfunction
+def StringToParts(word: string): list<string>
+    var parts = word
+        ->substitute('\C[^[:digit:][:lower:][:upper:]]', '_', 'g')
+        ->split('_')
 
-let regex#case#lower_underscore#case = {
-  \ 'name': s:name,
-  \ 'regex': s:sentenceSnake,
-  \ 'StringToParts': function('s:StringToParts'),
-  \ 'PartsToString': function('s:PartsToString'),
-  \ }
+    return parts->map(func.MapToLowerIfNotUpper)
+enddef
 
-function! regex#case#lower_underscore#init() abort
-endfunction
+def PartsToString(parts: list<string>): string
+    return parts->map(func.MapToLower)->join('_')
+enddef
+
+export var lower_underscore = {
+    name: name,
+    regex: sentenceSnake,
+    StringToParts: StringToParts,
+    PartsToString: PartsToString,
+}

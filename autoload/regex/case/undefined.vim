@@ -1,24 +1,25 @@
-let s:sentenceUndefined = '\v\C^.*$'
-let s:name = ['undefined']
+vim9script
 
-function! s:StringToParts(word) abort
-    let parts = a:word
-                \ ->substitute('\C[^[:digit:][:lower:][:upper:]]', '-', 'g')
-                \ ->split('-')
+import '../func.vim'
 
-    return parts->map(funcref('func#MapToLowerIfNotUpper'))
-endfunction
+var sentenceUndefined = '\v\C^.*$'
+var name = ['undefined']
 
-function! s:PartsToString(parts) abort
-    return a:parts->join(' ')
-endfunction
+def StringToParts(word: string): list<string>
+    var parts = word
+        ->substitute('\C[^[:digit:][:lower:][:upper:]]', '-', 'g')
+        ->split('-')
 
-let regex#case#undefined#case = {
-  \ 'name': s:name,
-  \ 'regex': s:sentenceUndefined,
-  \ 'StringToParts': function('s:StringToParts'),
-  \ 'PartsToString': function('s:PartsToString'),
-  \ }
+    return parts->map(func.MapToLowerIfNotUpper)
+enddef
 
-function! regex#case#undefined#init() abort
-endfunction
+def PartsToString(parts: list<string>): string
+    return parts->join(' ')
+enddef
+
+export var undefinedCase = {
+    name: name,
+    regex: sentenceUndefined,
+    StringToParts: StringToParts,
+    PartsToString: PartsToString,
+}

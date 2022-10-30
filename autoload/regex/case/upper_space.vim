@@ -1,24 +1,25 @@
-let s:sentenceUpper = '\v\C^[[:upper:]][[:upper:][:digit:]]*( [[:upper:][:digit:]]+)+$'
-let s:name = ['upper_space']
+vim9script
 
-function! s:StringToParts(word) abort
-    let parts = a:word
-        \ ->substitute('\C[^[:digit:][:lower:][:upper:]]', '_', 'g')
-        \ ->split('_')
+import '../func.vim'
 
-    return parts->map(funcref('func#MapToLower'))
-endfunction
+var sentenceUpper = '\v\C^[[:upper:]][[:upper:][:digit:]]*( [[:upper:][:digit:]]+)+$'
+var name = ['upper_space']
 
-function! s:PartsToString(parts) abort
-    return a:parts->map(funcref('func#MapToUpper'))->join(' ')
-endfunction
+def StringToParts(word: string): list<string>
+    var parts = word
+        ->substitute('\C[^[:digit:][:lower:][:upper:]]', '_', 'g')
+        ->split('_')
 
-let regex#case#upper_space#case = {
-  \ 'name': s:name,
-  \ 'regex': s:sentenceUpper,
-  \ 'StringToParts': function('s:StringToParts'),
-  \ 'PartsToString': function('s:PartsToString'),
-  \ }
+    return parts->map(func.MapToLower)
+enddef
 
-function! regex#case#upper_space#init() abort
-endfunction
+def PartsToString(parts: list<string>): string
+    return parts->map(func.MapToUpper)->join(' ')
+enddef
+
+export var upper_space = {
+    name: name,
+    regex: sentenceUpper,
+    StringToParts: StringToParts,
+    PartsToString: PartsToString,
+}

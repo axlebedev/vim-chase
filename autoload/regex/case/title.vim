@@ -1,24 +1,25 @@
-let s:sentenceTitle = '\v\C^[[:upper:]][[:lower:][:digit:]]*( [[:upper:]][[:lower:][:digit:]]+)*$'
-let s:name = ['title']
+vim9script
 
-function! s:StringToParts(word) abort
-    let parts = a:word
-                \ ->substitute('\C[^[:digit:][:lower:][:upper:]]', '-', 'g')
-                \ ->split('-')
+import '../func.vim'
 
-    return parts->map(funcref('func#MapToLowerIfNotUpper'))
-endfunction
+var sentenceTitle = '\v\C^[[:upper:]][[:lower:][:digit:]]*( [[:upper:]][[:lower:][:digit:]]+)*$'
+var name = ['title']
 
-function! s:PartsToString(parts) abort
-    return a:parts->map(funcref('func#MapToCapital'))->join(' ')
-endfunction
+def StringToParts(word: string): list<string>
+    var parts = word
+        ->substitute('\C[^[:digit:][:lower:][:upper:]]', '-', 'g')
+        ->split('-')
 
-let regex#case#title#case = {
-  \ 'name': s:name,
-  \ 'regex': s:sentenceTitle,
-  \ 'StringToParts': function('s:StringToParts'),
-  \ 'PartsToString': function('s:PartsToString'),
-  \ }
+    return parts->map(func.MapToLowerIfNotUpper)
+enddef
 
-function! regex#case#title#init() abort
-endfunction
+def PartsToString(parts: list<string>): string
+    return parts->map(func.MapToCapital)->join(' ')
+enddef
+
+export var title = {
+    name: name,
+    regex: sentenceTitle,
+    StringToParts: StringToParts,
+    PartsToString: PartsToString,
+}

@@ -1,20 +1,21 @@
-let s:sentenceLower = '\v\C^[[:lower:][:digit:]]+$'
-let s:name = ['lower']
+vim9script
 
-function! s:StringToParts(word) abort
-    return [a:word]->map(funcref('func#MapToLower'))
-endfunction
+import '../func.vim'
 
-function! s:PartsToString(parts) abort
-    return a:parts->map(funcref('func#MapToLower'))->join('-')
-endfunction
+var sentenceLower = '\v\C^[[:lower:][:digit:]]+$'
+var name = ['lower']
 
-let regex#case#lower#case = {
-  \ 'name': s:name,
-  \ 'regex': s:sentenceLower,
-  \ 'StringToParts': function('s:StringToParts'),
-  \ 'PartsToString': function('s:PartsToString'),
-  \ }
+def StringToParts(word: string): list<string>
+    return [word]->map(func.MapToLower)
+enddef
 
-function! regex#case#lower#init() abort
-endfunction
+def PartsToString(parts: list<string>): string
+    return parts->map(func.MapToLower)->join('-')
+enddef
+
+export var lower = {
+    name: name,
+    regex: sentenceLower,
+    StringToParts: StringToParts,
+    PartsToString: PartsToString,
+}
