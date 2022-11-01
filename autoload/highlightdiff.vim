@@ -2,6 +2,7 @@ vim9script
 
 import './helpers.vim'
 import './sessionstore.vim'
+import './getconfig.vim'
 
 var GetCharAtPos = helpers.GetCharAtPos
 
@@ -108,6 +109,10 @@ export def ClearHighlights(isOnCursorMove = false): void
     clearHighlightsTimerId = 0
     matchIds->map((index, id) => matchdelete(id))
     matchIds = []
+    
+    if (sessionstore.initialMode == 'v')
+        normal! gv
+    endif
 enddef
 
 export def HighlightDiff(oldWord: string, newWord: string): void
@@ -136,7 +141,10 @@ export def HighlightDiff(oldWord: string, newWord: string): void
         matchIds->add(matchadd('ChaseSeparator', '\%' .. curline .. 'l\%' .. byte .. 'c'))
     endfor
 
-    clearHighlightsTimerId = timer_start(g:highlightTimeout, (timerId) => ClearHighlights())
+    clearHighlightsTimerId = timer_start(
+        getconfig.GetConfig('highlightTimeout'),
+        (timerId) => ClearHighlights()
+    )
     augroup au_vimchase_highlight
         autocmd!
         autocmd CursorMoved * ClearHighlights(true)

@@ -17,7 +17,8 @@ export def GetSelectedWord(): string
     endif
 
     var sel = GetSelectionColumns()
-    return getline('.')[sel.start : sel.end]
+    # "- 1" because sel indexes start from 1, getline starts from 0
+    return getline('.')[sel.start - 1 : sel.end - 1]
 enddef
 
 export def GetCharAtPos(str: string, pos: number): string

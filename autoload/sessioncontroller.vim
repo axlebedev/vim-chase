@@ -3,6 +3,7 @@ vim9script
 import './regex/regex.vim'
 import './sessionstore.vim'
 import './helpers.vim'
+import './getconfig.vim'
 
 def ResetSessionEndTrigger(): void
     augroup au_vimchase
@@ -47,10 +48,6 @@ def OnSessionEnd(): void
 
     sessionstore.isSessionStarted = false
 
-    if (sessionstore.initialMode == 'n')
-        execute "normal! \<Esc>"
-    endif
-
     regex.OnRegexSessionEnd()
     ResetSessionEndTrigger()
 enddef
@@ -69,4 +66,12 @@ export def OnRunEnd(): void
     setcursorcharpos(sessionstore.initialCursorPos[1 : 2])
 
     SetSessionEndTrigger()
+
+    if (sessionstore.initialMode == 'v')
+        setpos("'<", [bufnr(), line('.'), sessionstore.lineBegin->strlen() + 1, 0])
+        setpos("'>", [bufnr(), line('.'), getline('.')->len() - sessionstore.lineEnd->strlen(), 0])
+        if (getconfig.GetConfig('highlightTimeout') == 0)
+            normal! gv
+        endif
+    endif
 enddef
