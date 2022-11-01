@@ -27,6 +27,7 @@ import './case/undefined.vim' as undefinedCase
 import './case/upper.vim'
 import './case/upper_space.vim'
 import './case/upper_underscore.vim'
+import './case/password.vim'
 
 var groups = {
     undefined: 'group-undefined',
@@ -71,6 +72,7 @@ var casesArrays = {
         title.title,
         upper_underscore.upper_underscore,
         upper_space.upper_space,
+        password.password,
     ],
     undefined: [undefinedCase.undefinedCase],
 }

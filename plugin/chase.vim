@@ -14,6 +14,7 @@ g:sentenceCasesOrder = get(g:, 'chaseSentenceCasesOrder', [
     'camel_abbr',
     'pascal',
     'upper',
+    'password',
     'upper_space',
     'title',
 ])
