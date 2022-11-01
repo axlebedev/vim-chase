@@ -22,12 +22,14 @@ g:sentenceCasesOrder = get(g:, 'chaseSentenceCasesOrder', [
 g:wordCasesOrder = get(g:, 'chaseWordCasesOrder', [
     'upper',
     'lower',
+    'password',
     'title',
 ])
 
 g:letterCasesOrder = get(g:, 'chaseLetterCasesOrder', [
     'upper',
     'lower',
+    'password',
 ])
 
 g:highlightTimeout = get(g:, 'chaseHighlightTimeout', 2000)

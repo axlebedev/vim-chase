@@ -11,7 +11,7 @@ vim9script
 #       every word should be in lowercase, abbriveation - in upper case
 #     - function 'PartsToString': how incoming array of words should be squashed into one
 # 3. (In 'autoload/regex/regex') import new file
-# 4. (In 'autoload/regex/regex') Add new case to 'casesArrays'
+# 4. (In 'autoload/regex/regex') Add new case to 'casesArray'
 # 5. (In vimrc) Add new case to corresponding casesOrder (g:sentenceCasesOrder, g:wordCasesOrder or g:letterCasesOrder)
 
 import '../getconfig.vim' 
@@ -53,58 +53,31 @@ enddef
 
 # =============================================================================
 
-var casesArrays = {
-    letter: [
-        lower.lower,
-        upper.upper
-    ],
-    word: [
-        lower.lower,
-        upper.upper,
-        title.title
-    ],
-    sentence: [
-        camel.camel,
-        camel_abbr.camel_abbr,
-        lower_dash.lower_dash,
-        lower_underscore.lower_underscore,
-        pascal.pascal,
-        title.title,
-        upper_underscore.upper_underscore,
-        upper_space.upper_space,
-        password.password,
-    ],
-    undefined: [undefinedCase.undefinedCase],
-}
+var casesArray = [
+    lower.lower,
+    upper.upper,
+    title.title,
+    camel.camel,
+    camel_abbr.camel_abbr,
+    lower_dash.lower_dash,
+    lower_underscore.lower_underscore,
+    pascal.pascal,
+    upper_underscore.upper_underscore,
+    upper_space.upper_space,
+    password.password,
+    undefinedCase.undefinedCase,
+]
 
 # =============================================================================
 
-def FindCaseByName(name: string, group: string): dict<any> # TODO: return type
-    if (group == groups.letter)
-        var i = 0
-        while (i < casesArrays.letter->len())
-            if (casesArrays.letter[i].name->index(name) > -1)
-                return casesArrays.letter[i]
-            endif
-            i += 1
-        endwhile
-    elseif (group == groups.word)
-        var i = 0
-        while (i < casesArrays.word->len())
-            if (casesArrays.word[i].name->index(name) > -1)
-                return casesArrays.word[i]
-            endif
-            i += 1
-        endwhile
-    elseif (group == groups.sentence)
-        var i = 0
-        while (i < casesArrays.sentence->len())
-            if (casesArrays.sentence[i].name->index(name) > -1)
-                return casesArrays.sentence[i]
-            endif
-            i += 1
-        endwhile
-    endif
+def FindCaseByName(name: string): dict<any> # TODO: return type
+    var i = 0
+    while (i < casesArray->len())
+        if (casesArray[i].name->index(name) > -1)
+            return casesArray[i]
+        endif
+        i += 1
+    endwhile
     return undefinedCase.undefinedCase
 enddef
 
@@ -131,7 +104,7 @@ def GetNextCase(group: string, oldCase: dict<any>, d: number): dict<any>
     var nextCaseIndex = (curindex + d) % casesOrderArray->len()
 
     var nextCaseName = casesOrderArray[nextCaseIndex]
-    return FindCaseByName(nextCaseName, group)
+    return FindCaseByName(nextCaseName)
 enddef
 
 # =============================================================================
@@ -152,14 +125,10 @@ def GetWordGroup(word: string): string
 enddef
 
 def GetWordCase(word: string, group: string): dict<any>
-    var cases = [undefinedCase.undefinedCase]
-    if (group == groups.letter)
-        cases = casesArrays.letter
-    elseif (group == groups.word)
-        cases = casesArrays.word
-    elseif (group == groups.sentence)
-        cases = casesArrays.sentence
-    endif
+    var cases = []
+    for name in GetCasesOrderByGroup(group)
+        cases->add(FindCaseByName(name))
+    endfor
 
     var i = 0
     while (i < cases->len())
