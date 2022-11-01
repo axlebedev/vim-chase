@@ -2,12 +2,10 @@ vim9script
 
 import autoload '../autoload/chase.vim'
 
-
 if exists("g:loaded_chase") || &cp || v:version < 900
     finish
 endif
 g:loaded_chase = 1
-
 
 g:sentenceCasesOrder = get(g:, 'chaseSentenceCasesOrder', [
     'dash',
