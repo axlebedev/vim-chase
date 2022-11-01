@@ -95,12 +95,24 @@ def GetIndexesToHighlight(oldWord: string, newWord: string): dict<list<number>>
 enddef
 
 var matchIds = []
-export def ClearHighlights(timerId: number = 0): void
+var clearHighlightsTimerId = 0
+var cursorMove_callCount = 0 # same hack as in sessioncontroller, search 'callCount'
+export def ClearHighlights(isOnCursorMove = false): void
+    if (cursorMove_callCount == 0 && isOnCursorMove)
+        cursorMove_callCount += 1
+        return
+    endif
+    cursorMove_callCount = 0
+
+    timer_stop(clearHighlightsTimerId)
     matchIds->map((index, id) => matchdelete(id))
     matchIds = []
 enddef
 
 export def HighlightDiff(oldWord: string, newWord: string): void
+    augroup au_vimchase_highlight
+        autocmd!
+    augroup END
     if (!highlightsDeclared)
         DeclareHighlightGroups()
     endif
@@ -115,9 +127,17 @@ export def HighlightDiff(oldWord: string, newWord: string): void
     var endOfWord = startOfWord + newWord->len() - 1
     matchIds->add(matchadd('ChaseWord', '\%' .. curline .. 'l\%>' .. (startOfWord - 1) .. 'c\%<' .. (endOfWord + 1) .. 'c'))
     for i in indexes.changedletters
-        matchIds->add(matchadd('ChaseChangedletter', '\%' .. curline .. 'l\%' .. (byteidx(newWord, i) + startOfWord) .. 'c'))
+        var byte = byteidx(newWord, i) + startOfWord
+        matchIds->add(matchadd('ChaseChangedletter', '\%' .. curline .. 'l\%' .. byte .. 'c'))
     endfor
     for i in indexes.separator
-        matchIds->add(matchadd('ChaseSeparator', '\%' .. curline .. 'l\%' .. (byteidx(newWord, i) + startOfWord) .. 'c'))
+        var byte = byteidx(newWord, i) + startOfWord
+        matchIds->add(matchadd('ChaseSeparator', '\%' .. curline .. 'l\%' .. byte .. 'c'))
     endfor
+
+    clearHighlightsTimerId = timer_start(g:highlightTimeout, (timerId) => ClearHighlights())
+    augroup au_vimchase_highlight
+        autocmd!
+        autocmd CursorMoved * ClearHighlights(true)
+    augroup END
 enddef
