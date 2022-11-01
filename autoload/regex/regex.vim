@@ -173,7 +173,6 @@ enddef
 
 export def GetNextWord(oldWord: string, isPrev: bool): string
     if (sessionCount == 0)
-        # echom 'START oldWord=[' .. oldWord .. ']'
         savedGroup = GetWordGroup(oldWord)
         savedCase = GetWordCase(oldWord, savedGroup)
         savedParts = savedCase.StringToParts(oldWord)
@@ -181,10 +180,6 @@ export def GetNextWord(oldWord: string, isPrev: bool): string
     
     sessionCount += isPrev ? -1 : 1
     var nextCase = GetNextCase(savedGroup, savedCase, sessionCount)
-    # echom 'oldWord=' .. oldWord .. ' savedCase=' .. string(savedCase.name) .. ' nextCase=' .. string(nextCase.name)
-    # echom 'nextCase=' .. string(nextCase.name)
-    # echom 'parts=' .. string(savedParts)
     var newWord = nextCase.PartsToString(savedParts->copy())
-    # echom 'newWord=' .. newWord
     return newWord
 enddef

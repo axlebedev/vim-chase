@@ -45,12 +45,8 @@ def ReplaceWithNext(isPrev: bool): void
         currentWord = helpers.GetSelectedWord()
     endif
 
-    # echom 'sessionstore.initialWord=[' .. sessionstore.initialWord .. ']'
     var newWord = regex.GetNextWord(sessionstore.initialWord, isPrev)
-    # echom 'newWord=[' .. newWord .. ']'
-    # echom 'begin=[' .. sessionstore.lineBegin .. '] end=[' .. sessionstore.lineEnd .. ']'
     var newLine = sessionstore.lineBegin .. newWord .. sessionstore.lineEnd
-    # echom 'newLine=[' .. newLine .. ']'
     setline(line('.'), newLine)
     highlightdiff.HighlightDiff(currentWord, newWord)
     currentWord = newWord

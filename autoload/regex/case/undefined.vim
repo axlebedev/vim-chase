@@ -6,7 +6,6 @@ var sentenceUndefined = '\v\C^.*$'
 var name = ['undefined']
 
 def StringToParts(word: string): list<string>
-    # echom 'StringToParts [' .. word .. ']'
     var parts = word
         ->substitute('\C[^[:digit:][:lower:][:upper:]]\+', '-', 'g')
         ->split('-')

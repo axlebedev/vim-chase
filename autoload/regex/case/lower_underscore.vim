@@ -15,7 +15,6 @@ enddef
 
 def PartsToString(parts: list<string>): string
     var result = parts->map(func.MapToLower)->join('_')
-    # echom 'PartsToString ' .. string(parts) .. '=>' .. result
     return result
 enddef
 

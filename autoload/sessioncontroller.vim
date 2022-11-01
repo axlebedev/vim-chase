@@ -7,14 +7,12 @@ import './sessionstore.vim'
 import './helpers.vim'
 
 def ResetSessionEndTrigger(): void
-    # echom 'ResetSessionEndTrigger'
     augroup au_vimchase
         autocmd!
     augroup END
 enddef
 
 def SetSessionEndTrigger(): void
-    # echom 'SetSessionEndTrigger'
     augroup au_vimchase
         autocmd!
         autocmd CursorMoved * OnSessionEnd()
@@ -22,7 +20,6 @@ def SetSessionEndTrigger(): void
 enddef
 
 export def OnSessionStart(): void
-    # echom 'OnSessionStart'
     sessionstore.initialMode = mode()
     sessionstore.savedIskeyword = &iskeyword
     set iskeyword+=-
@@ -32,8 +29,6 @@ export def OnSessionStart(): void
     sessionstore.lineBegin = helpers.GetCurrrentLineBegin()
     sessionstore.lineEnd = helpers.GetCurrrentLineEnd()
 
-    # echom 'line=[' .. getline('.') .. ']'
-    # echom 'begin=[' .. sessionstore.lineBegin .. '] end=[' .. sessionstore.lineEnd .. ']'
 
     sessionstore.isSessionStarted = true
 enddef
@@ -48,7 +43,6 @@ export def OnSessionEnd(): void
         return
     endif
     onSessionEnd_callCount = 0
-    # echom 'OnSessionEnd'
 
     &iskeyword = sessionstore.savedIskeyword
     # sessionstore.initialWord = ''
