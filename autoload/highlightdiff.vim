@@ -1,6 +1,11 @@
 vim9script
 
-var highlightsDeclared = false
+import './helpers.vim'
+import './sessionstore.vim'
+
+var GetCharAtPos = helpers.GetCharAtPos
+
+var isHighlightsDeclared = false
 def DeclareHighlightGroups(): void
     # highlights may be declared in vim config
     if (!hlexists('ChaseWord'))
@@ -12,12 +17,7 @@ def DeclareHighlightGroups(): void
     if (!hlexists('ChaseChangedletter'))
         highlight ChaseChangedletter guibg=#99FF99
     endif
-    highlightsDeclared = true
-enddef
-
-def GetCharAtIndex(str: string, index: number): string
-    var charnr = strgetchar(str, charidx(str, index))
-    return nr2char(charnr)
+    isHighlightsDeclared = true
 enddef
 
 # Get all not-letter symbol indexes
@@ -25,7 +25,7 @@ def GetSeparatorIndexes(word: string): list<number>
     var res = []
     var i = 0
     while (i < word->len())
-        if (GetCharAtIndex(word, i) !~? '[[:lower:][:digit:][:upper:]]')
+        if (word->GetCharAtPos(i) !~? '[[:lower:][:digit:][:upper:]]')
             add(res, i)
         endif
         i += 1
@@ -41,8 +41,8 @@ def GetChangedIndexes(oldWord: string, newWord: string): list<number>
     var res = []
     var i = 0
     while (i < oldWord->len())
-        var oldChar = GetCharAtIndex(oldWord, i)
-        var newChar = GetCharAtIndex(newWord, i)
+        var oldChar = oldWord->GetCharAtPos(i)
+        var newChar = newWord->GetCharAtPos(i)
         if (oldChar !=# newChar)
             add(res, i)
         endif
@@ -95,30 +95,50 @@ def GetIndexesToHighlight(oldWord: string, newWord: string): dict<list<number>>
 enddef
 
 var matchIds = []
-export def ClearHighlights(timerId: number = 0): void
-        for id in matchIds
-            matchdelete(id)
-        endfor
-        matchIds = []
+var clearHighlightsTimerId = 0
+var cursorMove_callCount = 0 # same hack as in sessioncontroller, search 'callCount'
+export def ClearHighlights(isOnCursorMove = false): void
+    if (cursorMove_callCount == 0 && isOnCursorMove)
+        cursorMove_callCount += 1
+        return
+    endif
+    cursorMove_callCount = 0
+
+    timer_stop(clearHighlightsTimerId)
+    clearHighlightsTimerId = 0
+    matchIds->map((index, id) => matchdelete(id))
+    matchIds = []
 enddef
 
 export def HighlightDiff(oldWord: string, newWord: string): void
-    if (!highlightsDeclared)
+    augroup au_vimchase_highlight
+        autocmd!
+    augroup END
+    if (!isHighlightsDeclared)
         DeclareHighlightGroups()
     endif
+    ClearHighlights()
     var indexes = GetIndexesToHighlight(oldWord, newWord)
 
-    # We cant override visual selection, so go to normal mode
+    # Highlight cant override selection color, so leave visual mode if it is
     execute "normal! \<Esc>"
 
     var curline = line('.')
-    var startOfWord = getpos("'<")[2]
-    var endOfWord = getpos("'>")[2]
-    add(matchIds, matchadd('ChaseWord', '\%' .. curline .. 'l\%>' .. startOfWord .. 'c\%<' .. endOfWord .. 'c'))
+    var startOfWord = sessionstore.lineBegin->len() + 1
+    var endOfWord = startOfWord + newWord->len() - 1
+    matchIds->add(matchadd('ChaseWord', '\%' .. curline .. 'l\%>' .. (startOfWord - 1) .. 'c\%<' .. (endOfWord + 1) .. 'c'))
     for i in indexes.changedletters
-        add(matchIds, matchadd('ChaseChangedletter', '\%' .. curline .. 'l\%' .. (i + startOfWord) .. 'c'))
+        var byte = byteidx(newWord, i) + startOfWord
+        matchIds->add(matchadd('ChaseChangedletter', '\%' .. curline .. 'l\%' .. byte .. 'c'))
     endfor
     for i in indexes.separator
-        add(matchIds, matchadd('ChaseSeparator', '\%' .. curline .. 'l\%' .. (i + startOfWord) .. 'c'))
+        var byte = byteidx(newWord, i) + startOfWord
+        matchIds->add(matchadd('ChaseSeparator', '\%' .. curline .. 'l\%' .. byte .. 'c'))
     endfor
+
+    clearHighlightsTimerId = timer_start(g:highlightTimeout, (timerId) => ClearHighlights())
+    augroup au_vimchase_highlight
+        autocmd!
+        autocmd CursorMoved * ClearHighlights(true)
+    augroup END
 enddef

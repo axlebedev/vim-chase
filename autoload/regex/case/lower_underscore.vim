@@ -14,7 +14,8 @@ def StringToParts(word: string): list<string>
 enddef
 
 def PartsToString(parts: list<string>): string
-    return parts->map(func.MapToLower)->join('_')
+    var result = parts->map(func.MapToLower)->join('_')
+    return result
 enddef
 
 export var lower_underscore = {

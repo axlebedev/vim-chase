@@ -3,25 +3,8 @@ vim9script
 import './getconfig.vim'
 import './regex/regex.vim'
 import './highlightdiff.vim'
-
-var savedIskeyword = &iskeyword
-var sessionStarted = false
-var startingMode = 'n'
-var highlightTimer = 0
-
-var savedVisualSelection = { 'start': 0, 'end': 0 }
-var gvTimer = 0
-def GV(timerId: number = 0): void
-    timer_stop(gvTimer)
-    gvTimer = 0
-
-    setpos("'<", [0, line('.'), savedVisualSelection.start])
-    setpos("'>", [0, line('.'), savedVisualSelection.end])
-    normal! gv
-enddef
-export def SetVisualSelection(selection: dict<number>): void
-    savedVisualSelection = selection
-enddef
+import './sessionstore.vim'
+import './helpers.vim'
 
 def ResetSessionEndTrigger(): void
     augroup au_vimchase
@@ -32,51 +15,60 @@ enddef
 def SetSessionEndTrigger(): void
     augroup au_vimchase
         autocmd!
-        autocmd CursorMoved * SessionControllerReset()
+        autocmd CursorMoved * OnSessionEnd()
     augroup END
 enddef
 
-export def SessionControllerStartRun(): bool
-    if (sessionStarted)
-        undojoin
-        highlightdiff.ClearHighlights()
-        ResetSessionEndTrigger()
-    else # if (!sessionStarted)
-        startingMode = mode()
-        savedIskeyword = &iskeyword
-        set iskeyword+=-
-    endif
-    var oldSessionStarted = sessionStarted
-    sessionStarted = true
-    timer_start(10, (timerId: number) => SetSessionEndTrigger() )
-    if (gvTimer > 0)
-        GV()
-    endif
-    return oldSessionStarted
+export def OnSessionStart(): void
+    sessionstore.initialMode = mode()
+    sessionstore.savedIskeyword = &iskeyword
+    set iskeyword+=-
+
+    sessionstore.initialWord = helpers.GetSelectedWord()
+    sessionstore.currentWord = sessionstore.initialWord
+    sessionstore.initialCursorPos = getcursorcharpos()
+    sessionstore.lineBegin = helpers.GetCurrrentLineBegin()
+    sessionstore.lineEnd = helpers.GetCurrrentLineEnd()
+
+
+    sessionstore.isSessionStarted = true
 enddef
 
-export def SessionControllerEndRun(): void
-    setpos("'<", [0, line('.'), savedVisualSelection.start])
-    setpos("'>", [0, line('.'), savedVisualSelection.end])
-    setpos(".", [0, line('.'), savedVisualSelection.end])
-    var highlightTimeout = getconfig.GetConfig('highlightTimeout')
-    highlightTimer = timer_start(highlightTimeout, highlightdiff.ClearHighlights)
-    if (highlightTimeout > 0)
-        gvTimer = timer_start(highlightTimeout, GV)
-    else
-        GV()
+# NOTE: 'onSessionEnd_callCount' is _dirty_ workaround: 
+# every run 'setline' causes 'CursorMoved' event once
+# So we need to ignore first CursorMoved autocmd event
+var onSessionEnd_callCount = 0
+def OnSessionEnd(): void
+    if (onSessionEnd_callCount == 0) 
+        onSessionEnd_callCount = 1
+        return
     endif
-enddef
+    onSessionEnd_callCount = 0
 
-def SessionControllerReset(): void
-    sessionStarted = false
-    timer_stop(gvTimer)
-    gvTimer = 0
-    if (startingMode == 'n')
+    &iskeyword = sessionstore.savedIskeyword
+
+    sessionstore.isSessionStarted = false
+
+    if (sessionstore.initialMode == 'n')
         execute "normal! \<Esc>"
     endif
-    highlightdiff.ClearHighlights()
-    &iskeyword = savedIskeyword
+
     regex.OnSessionEnd()
     ResetSessionEndTrigger()
+enddef
+
+export def OnRunStart(): void
+    ResetSessionEndTrigger()
+    if (sessionstore.isSessionStarted)
+        undojoin
+    endif
+enddef
+
+export def OnRunEnd(): void
+    onSessionEnd_callCount = 0
+
+    # initialCursorPos = [bufnr, line, col, ...]
+    setcursorcharpos(sessionstore.initialCursorPos[1 : 2])
+
+    SetSessionEndTrigger()
 enddef
