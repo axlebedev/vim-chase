@@ -38,17 +38,20 @@ var groups = {
 
 # =============================================================================
 
-var savedParts = []
-var savedGroup = groups.undefined
-var savedCase = undefinedCase.undefinedCase
-var sessionCount = 0
+# regex has its own store for session
+var regexSessionStore = {
+    parts: [],
+    group: groups.undefined,
+    case: undefinedCase.undefinedCase,
+    count: 0
+}
 
 # This one will be called on end of session, from SessionController
-export def OnSessionEnd(): void
-    savedParts = []
-    savedGroup = groups.undefined
-    savedCase = undefinedCase.undefinedCase
-    sessionCount = 0
+export def OnRegexSessionEnd(): void
+    regexSessionStore.parts = []
+    regexSessionStore.group = groups.undefined
+    regexSessionStore.case = undefinedCase.undefinedCase
+    regexSessionStore.count = 0
 enddef
 
 # =============================================================================
@@ -142,14 +145,14 @@ def GetWordCase(word: string, group: string): dict<any>
 enddef
 
 export def GetNextWord(oldWord: string, isPrev: bool): string
-    if (sessionCount == 0)
-        savedGroup = GetWordGroup(oldWord)
-        savedCase = GetWordCase(oldWord, savedGroup)
-        savedParts = savedCase.StringToParts(oldWord)
+    if (regexSessionStore.count == 0)
+        regexSessionStore.group = GetWordGroup(oldWord)
+        regexSessionStore.case = GetWordCase(oldWord, regexSessionStore.group)
+        regexSessionStore.parts = regexSessionStore.case.StringToParts(oldWord)
     endif
     
-    sessionCount += isPrev ? -1 : 1
-    var nextCase = GetNextCase(savedGroup, savedCase, sessionCount)
-    var newWord = nextCase.PartsToString(savedParts->copy())
+    regexSessionStore.count += isPrev ? -1 : 1
+    var nextCase = GetNextCase(regexSessionStore.group, regexSessionStore.case, regexSessionStore.count)
+    var newWord = nextCase.PartsToString(regexSessionStore.parts->copy())
     return newWord
 enddef

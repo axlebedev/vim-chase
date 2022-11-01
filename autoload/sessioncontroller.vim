@@ -53,7 +53,7 @@ def OnSessionEnd(): void
         execute "normal! \<Esc>"
     endif
 
-    regex.OnSessionEnd()
+    regex.OnRegexSessionEnd()
     ResetSessionEndTrigger()
 enddef
 
