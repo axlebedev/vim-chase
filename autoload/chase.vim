@@ -4,6 +4,7 @@ vim9script
 # \C - case sensitive
 # \v  -  magic mode (no need for \)
 # }}}
+#
 # 1 .   Проверить что работает как надо
 # 2 .   Конфиг последовательности
 # 3 .   Подсветка при chase#next (сделано в п.9)
@@ -26,10 +27,6 @@ vim9script
 
 # 20.   Запилить проверку что мы выделили текст внутри одной строки
 
-#######################################################################
-# Остановился на highlight
-#######################################################################
-
 import './getconfig.vim'
 import './regex/regex.vim'
 import './sessioncontroller.vim'
@@ -37,19 +34,17 @@ import './highlightdiff.vim'
 import './helpers.vim'
 import './sessionstore.vim'
 
-var currentWord = ''
 def ReplaceWithNext(isPrev: bool): void
     sessioncontroller.OnRunStart()
     if (!sessionstore.isSessionStarted)
         sessioncontroller.OnSessionStart()
-        currentWord = helpers.GetSelectedWord()
     endif
 
     var newWord = regex.GetNextWord(sessionstore.initialWord, isPrev)
     var newLine = sessionstore.lineBegin .. newWord .. sessionstore.lineEnd
     setline(line('.'), newLine)
-    highlightdiff.HighlightDiff(currentWord, newWord)
-    currentWord = newWord
+    highlightdiff.HighlightDiff(sessionstore.currentWord, newWord)
+    sessionstore.currentWord = newWord
 
     sessioncontroller.OnRunEnd()
 enddef

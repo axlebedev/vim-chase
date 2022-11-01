@@ -2,7 +2,7 @@ vim9script
 
 import './sessionstore.vim'
 
-export def GetSelectionColumns(): dict<number>
+def GetSelectionColumns(): dict<number>
     var pos1 = getcharpos('v')[2]
     var pos2 = getcharpos('.')[2]
     return {

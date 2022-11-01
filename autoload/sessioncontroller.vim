@@ -25,6 +25,7 @@ export def OnSessionStart(): void
     set iskeyword+=-
 
     sessionstore.initialWord = helpers.GetSelectedWord()
+    sessionstore.currentWord = sessionstore.initialWord
     sessionstore.initialCursorPos = getcursorcharpos()
     sessionstore.lineBegin = helpers.GetCurrrentLineBegin()
     sessionstore.lineEnd = helpers.GetCurrrentLineEnd()
@@ -37,7 +38,7 @@ enddef
 # every run 'setline' causes 'CursorMoved' event once
 # So we need to ignore first CursorMoved autocmd event
 var onSessionEnd_callCount = 0
-export def OnSessionEnd(): void
+def OnSessionEnd(): void
     if (onSessionEnd_callCount == 0) 
         onSessionEnd_callCount = 1
         return
@@ -45,8 +46,6 @@ export def OnSessionEnd(): void
     onSessionEnd_callCount = 0
 
     &iskeyword = sessionstore.savedIskeyword
-    # sessionstore.initialWord = ''
-    # sessionstore.initialCursorPos = getcursorcharpos()
 
     sessionstore.isSessionStarted = false
 

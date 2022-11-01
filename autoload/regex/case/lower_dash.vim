@@ -17,7 +17,6 @@ def PartsToString(parts: list<string>): string
     return parts->map(func.MapToLower)->join('-')
 enddef
 
-# export var regex#case#lower_dash#case = {
 export var lower_dash = {
     name: name,
     regex: sentenceDash,

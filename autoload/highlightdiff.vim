@@ -5,7 +5,7 @@ import './sessionstore.vim'
 
 var GetCharAtPos = helpers.GetCharAtPos
 
-var highlightsDeclared = false
+var isHighlightsDeclared = false
 def DeclareHighlightGroups(): void
     # highlights may be declared in vim config
     if (!hlexists('ChaseWord'))
@@ -17,7 +17,7 @@ def DeclareHighlightGroups(): void
     if (!hlexists('ChaseChangedletter'))
         highlight ChaseChangedletter guibg=#99FF99
     endif
-    highlightsDeclared = true
+    isHighlightsDeclared = true
 enddef
 
 # Get all not-letter symbol indexes
@@ -105,6 +105,7 @@ export def ClearHighlights(isOnCursorMove = false): void
     cursorMove_callCount = 0
 
     timer_stop(clearHighlightsTimerId)
+    clearHighlightsTimerId = 0
     matchIds->map((index, id) => matchdelete(id))
     matchIds = []
 enddef
@@ -113,13 +114,13 @@ export def HighlightDiff(oldWord: string, newWord: string): void
     augroup au_vimchase_highlight
         autocmd!
     augroup END
-    if (!highlightsDeclared)
+    if (!isHighlightsDeclared)
         DeclareHighlightGroups()
     endif
     ClearHighlights()
     var indexes = GetIndexesToHighlight(oldWord, newWord)
 
-    # We cant override visual selection, so go to normal mode
+    # Highlight cant override selection color, so leave visual mode if it is
     execute "normal! \<Esc>"
 
     var curline = line('.')
