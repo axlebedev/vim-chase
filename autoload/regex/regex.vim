@@ -10,10 +10,9 @@ vim9script
 #       example for camelCase: 'oneTWOThree' => ['one','TWO','three']
 #       every word should be in lowercase, abbriveation - in upper case
 #     - function 'PartsToString': how incoming array of words should be squashed into one
-#     - empty function 'init' - for correct initialization of export variables
-# 3. (In 'autoload/regex/regex') 'call regex#<casename>#init()'
-# 4. (In 'autoload/regex/regex') Add new '...#case' to 'casesArrays'
-# 5. (In vimrc) Add new case to corresponding casesOrder
+# 3. (In 'autoload/regex/regex') import new file
+# 4. (In 'autoload/regex/regex') Add new case to 'casesArrays'
+# 5. (In vimrc) Add new case to corresponding casesOrder (g:sentenceCasesOrder, g:wordCasesOrder or g:letterCasesOrder)
 
 import '../getconfig.vim' 
 
