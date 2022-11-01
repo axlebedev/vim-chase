@@ -27,11 +27,9 @@ vim9script
 
 # 20.   Запилить проверку что мы выделили текст внутри одной строки
 
-import './getconfig.vim'
 import './regex/regex.vim'
 import './sessioncontroller.vim'
 import './highlightdiff.vim'
-import './helpers.vim'
 import './sessionstore.vim'
 
 def ReplaceWithNext(isPrev: bool): void

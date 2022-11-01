@@ -1,8 +1,6 @@
 vim9script 
 
-import './getconfig.vim'
 import './regex/regex.vim'
-import './highlightdiff.vim'
 import './sessionstore.vim'
 import './helpers.vim'
 
