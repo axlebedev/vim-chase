@@ -1,6 +1,7 @@
 vim9script
 
 import './helpers.vim'
+import './sessionstore.vim'
 
 var GetCharAtPos = helpers.GetCharAtPos
 
@@ -110,15 +111,16 @@ export def HighlightDiff(oldWord: string, newWord: string): void
     execute "normal! \<Esc>"
 
     var curline = line('.')
-    var startOfWord = 0 # TODO
-    var endOfWord = helpers.GetEndPosOfCurrentWord()
+    var startOfWord = sessionstore.lineBegin->len() + 1
+    var endOfWord = startOfWord + newWord->len() - 1
+    echom 'indexes=' .. string(indexes)
     # echom 'oldWord=[' .. oldWord .. '] newWord=[' .. newWord .. '] indexes=' .. string(indexes) .. ' se=' .. string({ s: startOfWord, e: endOfWord })
     matchIds->add(matchadd('ChaseWord', '\%' .. curline .. 'l\%>' .. (startOfWord - 1) .. 'c\%<' .. (endOfWord + 1) .. 'c'))
     for i in indexes.changedletters
-        matchIds->add(matchadd('ChaseChangedletter', '\%' .. curline .. 'l\%' .. (i + startOfWord) .. 'c'))
+        matchIds->add(matchadd('ChaseChangedletter', '\%' .. curline .. 'l\%' .. (byteidx(newWord, i) + startOfWord) .. 'c'))
     endfor
     for i in indexes.separator
-        matchIds->add(matchadd('ChaseSeparator', '\%' .. curline .. 'l\%' .. (i + startOfWord) .. 'c'))
+        matchIds->add(matchadd('ChaseSeparator', '\%' .. curline .. 'l\%' .. (byteidx(newWord, i) + startOfWord) .. 'c'))
     endfor
     # echom 'matchids=' .. string(matchIds)
 enddef

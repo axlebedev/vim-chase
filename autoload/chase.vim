@@ -52,7 +52,7 @@ def ReplaceWithNext(isPrev: bool): void
     var newLine = sessionstore.lineBegin .. newWord .. sessionstore.lineEnd
     # echom 'newLine=[' .. newLine .. ']'
     setline(line('.'), newLine)
-    # highlightdiff.HighlightDiff(currentWord, newWord)
+    highlightdiff.HighlightDiff(currentWord, newWord)
     currentWord = newWord
 
     sessioncontroller.OnRunEnd()
