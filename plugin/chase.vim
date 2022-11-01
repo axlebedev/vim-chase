@@ -36,5 +36,5 @@ g:highlightTimeout = get(g:, 'chaseHighlightTimeout', 2000)
 if !get(g:, 'chase_nomap', 0)
     nnoremap ~ <CMD>call <SID>chase.Next()<CR>
     vnoremap ~ <CMD>call <SID>chase.Next()<CR>
-    vnoremap ! <CMD>call <SID>chase.Prev()<CR>
+    nnoremap ! <CMD>call <SID>chase.Prev()<CR>
 endif

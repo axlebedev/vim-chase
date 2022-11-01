@@ -1,5 +1,9 @@
 vim9script
 
+import './helpers.vim'
+
+var GetCharAtPos = helpers.GetCharAtPos
+
 var highlightsDeclared = false
 def DeclareHighlightGroups(): void
     # highlights may be declared in vim config
@@ -15,17 +19,12 @@ def DeclareHighlightGroups(): void
     highlightsDeclared = true
 enddef
 
-def GetCharAtIndex(str: string, index: number): string
-    var charnr = strgetchar(str, charidx(str, index))
-    return nr2char(charnr)
-enddef
-
 # Get all not-letter symbol indexes
 def GetSeparatorIndexes(word: string): list<number>
     var res = []
     var i = 0
     while (i < word->len())
-        if (GetCharAtIndex(word, i) !~? '[[:lower:][:digit:][:upper:]]')
+        if (word->GetCharAtPos(i) !~? '[[:lower:][:digit:][:upper:]]')
             add(res, i)
         endif
         i += 1
@@ -41,8 +40,8 @@ def GetChangedIndexes(oldWord: string, newWord: string): list<number>
     var res = []
     var i = 0
     while (i < oldWord->len())
-        var oldChar = GetCharAtIndex(oldWord, i)
-        var newChar = GetCharAtIndex(newWord, i)
+        var oldChar = oldWord->GetCharAtPos(i)
+        var newChar = newWord->GetCharAtPos(i)
         if (oldChar !=# newChar)
             add(res, i)
         endif
@@ -96,29 +95,30 @@ enddef
 
 var matchIds = []
 export def ClearHighlights(timerId: number = 0): void
-        for id in matchIds
-            matchdelete(id)
-        endfor
-        matchIds = []
+    matchIds->map((index, id) => matchdelete(id))
+    matchIds = []
 enddef
 
 export def HighlightDiff(oldWord: string, newWord: string): void
     if (!highlightsDeclared)
         DeclareHighlightGroups()
     endif
+    ClearHighlights()
     var indexes = GetIndexesToHighlight(oldWord, newWord)
 
     # We cant override visual selection, so go to normal mode
     execute "normal! \<Esc>"
 
     var curline = line('.')
-    var startOfWord = getpos("'<")[2]
-    var endOfWord = getpos("'>")[2]
-    add(matchIds, matchadd('ChaseWord', '\%' .. curline .. 'l\%>' .. startOfWord .. 'c\%<' .. endOfWord .. 'c'))
+    var startOfWord = 0 # TODO
+    var endOfWord = helpers.GetEndPosOfCurrentWord()
+    # echom 'oldWord=[' .. oldWord .. '] newWord=[' .. newWord .. '] indexes=' .. string(indexes) .. ' se=' .. string({ s: startOfWord, e: endOfWord })
+    matchIds->add(matchadd('ChaseWord', '\%' .. curline .. 'l\%>' .. (startOfWord - 1) .. 'c\%<' .. (endOfWord + 1) .. 'c'))
     for i in indexes.changedletters
-        add(matchIds, matchadd('ChaseChangedletter', '\%' .. curline .. 'l\%' .. (i + startOfWord) .. 'c'))
+        matchIds->add(matchadd('ChaseChangedletter', '\%' .. curline .. 'l\%' .. (i + startOfWord) .. 'c'))
     endfor
     for i in indexes.separator
-        add(matchIds, matchadd('ChaseSeparator', '\%' .. curline .. 'l\%' .. (i + startOfWord) .. 'c'))
+        matchIds->add(matchadd('ChaseSeparator', '\%' .. curline .. 'l\%' .. (i + startOfWord) .. 'c'))
     endfor
+    # echom 'matchids=' .. string(matchIds)
 enddef

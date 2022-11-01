@@ -9,12 +9,7 @@ export def MapToUpper(i: number, str: string): string
 enddef
 
 export def MapToCapital(i: number, str: string): string
-    var firstCharIndex = 0
-    while (charidx(str, firstCharIndex + 1) == 0)
-        firstCharIndex += 1
-    endwhile
-
-    return str[0 : firstCharIndex]->toupper() .. str[firstCharIndex + 1 :]->tolower()
+    return str->substitute('\v\c(.)(.*)', '\U\1\L\2', '')
 enddef
 
 export def MapToLowerIfNotUpper(i: number, str: string): string
