@@ -6,6 +6,19 @@ import './getconfig.vim'
 
 var GetCharAtPos = helpers.GetCharAtPos
 
+def ResetHighlightEndTrigger(): void
+    augroup au_vimchase_highlight
+        autocmd!
+    augroup END
+enddef
+
+def SetHighlightEndTrigger(): void
+    augroup au_vimchase_highlight
+        autocmd!
+        autocmd CursorMoved * ClearHighlights(true)
+    augroup END
+enddef
+
 var isHighlightsDeclared = false
 def DeclareHighlightGroups(): void
     # highlights may be declared in vim config
@@ -110,15 +123,15 @@ export def ClearHighlights(isOnCursorMove = false): void
     matchIds->map((index, id) => matchdelete(id))
     matchIds = []
     
-    if (sessionstore.initialMode == 'v')
+    if (sessionstore.initialMode == 'v' && mode() != 'v')
         normal! gv
     endif
+
+    ResetHighlightEndTrigger()
 enddef
 
 export def HighlightDiff(oldWord: string, newWord: string): void
-    augroup au_vimchase_highlight
-        autocmd!
-    augroup END
+    ResetHighlightEndTrigger()
     if (!isHighlightsDeclared)
         DeclareHighlightGroups()
     endif
@@ -145,8 +158,5 @@ export def HighlightDiff(oldWord: string, newWord: string): void
         getconfig.GetConfig('highlightTimeout'),
         (timerId) => ClearHighlights()
     )
-    augroup au_vimchase_highlight
-        autocmd!
-        autocmd CursorMoved * ClearHighlights(true)
-    augroup END
+    SetHighlightEndTrigger()
 enddef
