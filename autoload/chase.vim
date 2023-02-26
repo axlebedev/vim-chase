@@ -46,9 +46,9 @@ def ReplaceWithNext(isPrev: bool): void
         setcursorcharpos(line('.'), sessionstore.lineBegin->len() + 1)
         highlightdiff.HighlightDiff(sessionstore.currentWord, newWord)
         sessionstore.currentWord = newWord
-        regex.ShowPopup()
     endif
 
+    regex.ShowPopup(newWord)
     sessioncontroller.OnRunEnd()
 enddef
 

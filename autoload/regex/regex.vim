@@ -165,11 +165,26 @@ export def GetNextWord(oldWord: string, isPrev: bool): string
     return newWord
 enddef
 
-export def ShowPopup(): void
+var popupWinId = 0
+export def ShowPopup(curWord: string): void
+    popup_close(popupWinId)
+
     var popupHeight = regexSessionStore.precomputedWords->len()
     var curLine = winline()
+    var curCol = getcursorcharpos()[2]
     var winHeight = winheight(winnr())
-    popup_atcursor(regexSessionStore.precomputedWords, {
-        pos: (winHeight - curLine >= popupHeight ? 'topleft' : 'botleft')
+    popupWinId = popup_atcursor(regexSessionStore.precomputedWords, {
+        pos: (winHeight - curLine >= popupHeight ? 'topleft' : 'botleft'),
+        zindex: 1000,
+        wrap: false,
+        highlight: 'ChaseWord',
     })
+    var indexInWords = regexSessionStore.precomputedWords->index(curWord)
+    matchadd(
+        'ChaseChangedletter',
+        '\%' .. (indexInWords + 1) .. 'l',
+        1000,
+        1991, # random number here
+        {window: popupWinId}
+    )
 enddef
