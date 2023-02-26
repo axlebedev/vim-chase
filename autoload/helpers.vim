@@ -72,7 +72,8 @@ export def GetCurrrentLineEnd(): string
         if (curpos > 1)
             secondHalf = line[curpos : ]
         endif
-        return secondHalf->substitute(sessionstore.initialWord, '', '')
+        var escapedWord = '\V' .. escape(sessionstore.initialWord, '\')
+        return secondHalf->substitute(escapedWord, '', '')
     endif
 
     var sel = GetSelectionColumns()
