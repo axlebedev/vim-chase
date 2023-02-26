@@ -43,7 +43,8 @@ var regexSessionStore = {
     parts: [],
     group: groups.undefined,
     case: undefinedCase.undefinedCase,
-    count: 0
+    count: 0,
+    precomputedWords: [],
 }
 
 # This one will be called on end of session, from SessionController
@@ -52,6 +53,7 @@ export def OnRegexSessionEnd(): void
     regexSessionStore.group = groups.undefined
     regexSessionStore.case = undefinedCase.undefinedCase
     regexSessionStore.count = 0
+    regexSessionStore.precomputedWords = []
 enddef
 
 # =============================================================================
@@ -144,15 +146,39 @@ def GetWordCase(word: string, group: string): dict<any>
     return undefinedCase.undefinedCase
 enddef
 
+def GetPrecomputedWords(oldWord: string, oldGroup: string, oldCase: dict<any>): list<string>
+    var parts = oldCase.StringToParts(oldWord)
+    var caseNames = GetCasesOrderByGroup(oldGroup)
+    var precomputedWords = caseNames->copy()->map((i, caseName) => {
+        var case = FindCaseByName(caseName)
+        return case.PartsToString(parts->copy())
+    })
+    return precomputedWords
+enddef
+
+# def GetStartIndexInCaseOrder(oldWord: string, precomputedWords: list<string>): number
+#     return precomputedWords->index(oldWord)
+# enddef
+
 export def GetNextWord(oldWord: string, isPrev: bool): string
     if (regexSessionStore.count == 0)
         regexSessionStore.group = GetWordGroup(oldWord)
         regexSessionStore.case = GetWordCase(oldWord, regexSessionStore.group)
         regexSessionStore.parts = regexSessionStore.case.StringToParts(oldWord)
+        regexSessionStore.precomputedWords = GetPrecomputedWords(oldWord, regexSessionStore.group, regexSessionStore.case)
     endif
     
     regexSessionStore.count += isPrev ? -1 : 1
     var nextCase = GetNextCase(regexSessionStore.group, regexSessionStore.case, regexSessionStore.count)
     var newWord = nextCase.PartsToString(regexSessionStore.parts->copy())
     return newWord
+enddef
+
+export def ShowPopup(): void
+    var popupHeight = regexSessionStore.precomputedWords->len()
+    var curLine = winline()
+    var winHeight = winheight(winnr())
+    popup_atcursor(regexSessionStore.precomputedWords, {
+        pos: (winHeight - curLine >= popupHeight ? 'topleft' : 'botleft')
+    })
 enddef
