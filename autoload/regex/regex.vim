@@ -95,23 +95,6 @@ def GetCasesOrderByGroup(group: string): list<string>
     return getconfig.GetConfig('sentenceCasesOrder')
 enddef
 
-def GetNextCase(group: string, oldCase: dict<any>, d: number): dict<any>
-    var casesOrderArray = GetCasesOrderByGroup(group)
-
-    var curindex = 0
-    while (curindex < casesOrderArray->len())
-        var oneOfNames = casesOrderArray[curindex]
-        if (oldCase.name->index(oneOfNames) > -1)
-            break
-        endif
-        curindex += 1
-    endwhile
-    var nextCaseIndex = (curindex + d) % casesOrderArray->len()
-
-    var nextCaseName = casesOrderArray[nextCaseIndex]
-    return FindCaseByName(nextCaseName)
-enddef
-
 # =============================================================================
 
 def GetWordGroup(word: string): string
@@ -169,8 +152,12 @@ export def GetNextWord(oldWord: string, isPrev: bool): string
     endif
     
     regexSessionStore.count += isPrev ? -1 : 1
-    var nextCase = GetNextCase(regexSessionStore.group, regexSessionStore.case, regexSessionStore.count)
-    var newWord = nextCase.PartsToString(regexSessionStore.parts->copy())
+
+    var words = regexSessionStore.precomputedWords
+    var newWord = words[
+        (words->index(oldWord) + regexSessionStore.count) % words->len()
+    ]
+
     return newWord
 enddef
 
