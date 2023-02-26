@@ -10,9 +10,7 @@ def StringToParts(word: string): list<string>
 enddef
 
 def PartsToString(parts: list<string>): string
-    var res = parts->join('*')->substitute('\v\c.', '*', 'g')
-    echom 'parts=' .. string(parts) .. ' res=' .. res
-    return res
+    return parts->join('*')->substitute('\v\c.', '*', 'g')
 enddef
 
 export var password = {
