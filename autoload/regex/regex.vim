@@ -139,10 +139,6 @@ def GetPrecomputedWords(oldWord: string, oldGroup: string, oldCase: dict<any>): 
     return precomputedWords
 enddef
 
-# def GetStartIndexInCaseOrder(oldWord: string, precomputedWords: list<string>): number
-#     return precomputedWords->index(oldWord)
-# enddef
-
 export def GetNextWord(oldWord: string, isPrev: bool): string
     if (regexSessionStore.count == 0)
         regexSessionStore.group = GetWordGroup(oldWord)
