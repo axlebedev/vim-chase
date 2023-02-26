@@ -54,6 +54,9 @@ export def GetCurrrentLineBegin(): string
     endif
 
     var sel = GetSelectionColumns()
+    if (sel.start == 1)
+        return ''
+    endif
     return line[ : sel.start - 2]
 enddef
 
