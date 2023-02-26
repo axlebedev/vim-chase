@@ -39,12 +39,16 @@ def ReplaceWithNext(isPrev: bool): void
     endif
 
     var newWord = regex.GetNextWord(sessionstore.initialWord, isPrev)
-    var newLine = sessionstore.lineBegin .. newWord .. sessionstore.lineEnd
-    setline(line('.'), newLine)
-    setcursorcharpos(line('.'), sessionstore.lineBegin->len() + 1)
-    highlightdiff.HighlightDiff(sessionstore.currentWord, newWord)
-    sessionstore.currentWord = newWord
 
+    if (newWord != sessionstore.initialWord)
+        var newLine = sessionstore.lineBegin .. newWord .. sessionstore.lineEnd
+        setline(line('.'), newLine)
+        setcursorcharpos(line('.'), sessionstore.lineBegin->len() + 1)
+        highlightdiff.HighlightDiff(sessionstore.currentWord, newWord)
+        sessionstore.currentWord = newWord
+    endif
+
+    regex.ShowPopup(newWord)
     sessioncontroller.OnRunEnd()
 enddef
 

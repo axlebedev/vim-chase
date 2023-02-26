@@ -43,7 +43,8 @@ var regexSessionStore = {
     parts: [],
     group: groups.undefined,
     case: undefinedCase.undefinedCase,
-    count: 0
+    count: 0,
+    precomputedWords: [],
 }
 
 # This one will be called on end of session, from SessionController
@@ -52,6 +53,7 @@ export def OnRegexSessionEnd(): void
     regexSessionStore.group = groups.undefined
     regexSessionStore.case = undefinedCase.undefinedCase
     regexSessionStore.count = 0
+    regexSessionStore.precomputedWords = []
 enddef
 
 # =============================================================================
@@ -93,27 +95,12 @@ def GetCasesOrderByGroup(group: string): list<string>
     return getconfig.GetConfig('sentenceCasesOrder')
 enddef
 
-def GetNextCase(group: string, oldCase: dict<any>, d: number): dict<any>
-    var casesOrderArray = GetCasesOrderByGroup(group)
-
-    var curindex = 0
-    while (curindex < casesOrderArray->len())
-        var oneOfNames = casesOrderArray[curindex]
-        if (oldCase.name->index(oneOfNames) > -1)
-            break
-        endif
-        curindex += 1
-    endwhile
-    var nextCaseIndex = (curindex + d) % casesOrderArray->len()
-
-    var nextCaseName = casesOrderArray[nextCaseIndex]
-    return FindCaseByName(nextCaseName)
-enddef
-
 # =============================================================================
 
 def GetWordGroup(word: string): string
-    if (word->len() < 2)
+    if (word !~? '\v[[:lower:][:upper:]]')
+        return groups.undefined
+    elseif (word->len() < 2)
         return groups.letter
     elseif (
         word =~# '\v\C^[[:upper:][:digit:]]+$' 
@@ -144,15 +131,60 @@ def GetWordCase(word: string, group: string): dict<any>
     return undefinedCase.undefinedCase
 enddef
 
+def GetPrecomputedWords(oldWord: string, oldGroup: string, oldCase: dict<any>): list<string>
+    if (oldGroup == groups.undefined)
+        return []
+    endif
+    var parts = oldCase.StringToParts(oldWord)
+    var caseNames = GetCasesOrderByGroup(oldGroup)
+    var precomputedWords = caseNames->copy()->map((i, caseName) => {
+        var case = FindCaseByName(caseName)
+        return case.PartsToString(parts->copy())
+    })
+    return precomputedWords
+enddef
+
 export def GetNextWord(oldWord: string, isPrev: bool): string
     if (regexSessionStore.count == 0)
         regexSessionStore.group = GetWordGroup(oldWord)
         regexSessionStore.case = GetWordCase(oldWord, regexSessionStore.group)
         regexSessionStore.parts = regexSessionStore.case.StringToParts(oldWord)
+        regexSessionStore.precomputedWords = GetPrecomputedWords(oldWord, regexSessionStore.group, regexSessionStore.case)
+    endif
+    if (regexSessionStore.group == groups.undefined)
+        return oldWord
     endif
     
     regexSessionStore.count += isPrev ? -1 : 1
-    var nextCase = GetNextCase(regexSessionStore.group, regexSessionStore.case, regexSessionStore.count)
-    var newWord = nextCase.PartsToString(regexSessionStore.parts->copy())
+
+    var words = regexSessionStore.precomputedWords
+    var newWord = words[
+        (words->index(oldWord) + regexSessionStore.count) % words->len()
+    ]
+
     return newWord
+enddef
+
+var popupWinId = 0
+export def ShowPopup(curWord: string): void
+    popup_close(popupWinId)
+
+    var popupHeight = regexSessionStore.precomputedWords->len()
+    var curLine = winline()
+    var curCol = getcursorcharpos()[2]
+    var winHeight = winheight(winnr())
+    popupWinId = popup_atcursor(regexSessionStore.precomputedWords, {
+        pos: (winHeight - curLine >= popupHeight ? 'topleft' : 'botleft'),
+        zindex: 1000,
+        wrap: false,
+        highlight: 'ChaseWord',
+    })
+    var indexInWords = regexSessionStore.precomputedWords->index(curWord)
+    matchadd(
+        'ChaseChangedletter',
+        '\%' .. (indexInWords + 1) .. 'l',
+        1000,
+        1991, # random number here
+        {window: popupWinId}
+    )
 enddef
