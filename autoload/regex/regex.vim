@@ -98,7 +98,9 @@ enddef
 # =============================================================================
 
 def GetWordGroup(word: string): string
-    if (word->len() < 2)
+    if (word !~? '\v[[:lower:][:upper:]]')
+        return groups.undefined
+    elseif (word->len() < 2)
         return groups.letter
     elseif (
         word =~# '\v\C^[[:upper:][:digit:]]+$' 
@@ -130,6 +132,9 @@ def GetWordCase(word: string, group: string): dict<any>
 enddef
 
 def GetPrecomputedWords(oldWord: string, oldGroup: string, oldCase: dict<any>): list<string>
+    if (oldGroup == groups.undefined)
+        return []
+    endif
     var parts = oldCase.StringToParts(oldWord)
     var caseNames = GetCasesOrderByGroup(oldGroup)
     var precomputedWords = caseNames->copy()->map((i, caseName) => {
@@ -145,6 +150,9 @@ export def GetNextWord(oldWord: string, isPrev: bool): string
         regexSessionStore.case = GetWordCase(oldWord, regexSessionStore.group)
         regexSessionStore.parts = regexSessionStore.case.StringToParts(oldWord)
         regexSessionStore.precomputedWords = GetPrecomputedWords(oldWord, regexSessionStore.group, regexSessionStore.case)
+    endif
+    if (regexSessionStore.group == groups.undefined)
+        return oldWord
     endif
     
     regexSessionStore.count += isPrev ? -1 : 1
