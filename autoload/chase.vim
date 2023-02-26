@@ -41,6 +41,7 @@ def ReplaceWithNext(isPrev: bool): void
     var newWord = regex.GetNextWord(sessionstore.initialWord, isPrev)
     var newLine = sessionstore.lineBegin .. newWord .. sessionstore.lineEnd
     setline(line('.'), newLine)
+    setcursorcharpos(line('.'), sessionstore.lineBegin->len() + 1)
     highlightdiff.HighlightDiff(sessionstore.currentWord, newWord)
     sessionstore.currentWord = newWord
 
