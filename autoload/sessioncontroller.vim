@@ -29,7 +29,6 @@ export def OnSessionStart(): void
     sessionstore.lineBegin = helpers.GetCurrrentLineBegin()
     sessionstore.lineEnd = helpers.GetCurrrentLineEnd()
 
-
     sessionstore.isSessionStarted = true
 enddef
 
