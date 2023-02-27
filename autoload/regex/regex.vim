@@ -171,15 +171,32 @@ var popupWinId = 0
 export def ShowPopup(curWord: string): void
     popup_close(popupWinId)
 
+    # For correct highlight, with paddings
+    var precomputedWordsToShow = regexSessionStore.precomputedWords
+        ->copy()
+        ->map((i, word) => ' ' .. word .. ' ') # add paddings, for beautiful popup 
+
+    var maxPrecomputedLen = precomputedWordsToShow->copy()->map((index, word) => word->len())->max() 
+    precomputedWordsToShow = precomputedWordsToShow->map((i, word) => {
+                var paddedWord = word
+                while (maxPrecomputedLen > paddedWord->len())
+                    paddedWord = paddedWord .. ' '
+                endwhile
+                return paddedWord
+            }) # add padding-right of spaces, for hightlight
+
     var popupHeight = regexSessionStore.precomputedWords->len()
-    popupWinId = popup_atcursor(regexSessionStore.precomputedWords, {
-        pos: (winheight(winnr()) - winline() >= popupHeight ? 'topleft' : 'botleft'),
-        col: screenpos(win_getid(winnr()), line('.'), sessionstore.lineBegin->len()).col + 1,
-        zindex: 1000,
-        wrap: false,
-        highlight: 'ChaseWord',
-        moved: [0, 0, 0],
-    })
+    popupWinId = popup_atcursor(
+        precomputedWordsToShow,
+        {
+            pos: (winheight(winnr()) - winline() >= popupHeight ? 'topleft' : 'botleft'),
+            col: screenpos(win_getid(winnr()), line('.'), sessionstore.lineBegin->len()).col,
+            zindex: 1000,
+            wrap: false,
+            highlight: 'ChaseWord',
+            moved: [0, 0, 0],
+        }
+    )
     var indexInWords = (
             regexSessionStore.precomputedWords->index(sessionstore.initialWord) 
             + regexSessionStore.count
@@ -187,9 +204,9 @@ export def ShowPopup(curWord: string): void
     if (!hlexists('ChaseChangedletter'))
         highlightdiff.DeclareHighlightGroups()
     endif
-    matchadd(
+    matchaddpos(
         'ChaseChangedletter',
-        '\%' .. (indexInWords + 1) .. 'l',
+        [indexInWords + 1],
         1000,
         1991, # random number here
         {window: popupWinId}
