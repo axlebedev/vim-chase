@@ -40,7 +40,7 @@ def ReplaceWithNext(isPrev: bool): void
 
     var newWord = regex.GetNextWord(sessionstore.initialWord, isPrev)
 
-    if (newWord != sessionstore.initialWord)
+    if (newWord != sessionstore.currentWord)
         var newLine = sessionstore.lineBegin .. newWord .. sessionstore.lineEnd
         setline(line('.'), newLine)
         setcursorcharpos(line('.'), sessionstore.lineBegin->len() + 1)
