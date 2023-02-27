@@ -41,6 +41,7 @@ def OnSessionEnd(): void
         onSessionEnd_callCount = 1
         return
     endif
+    regex.HidePopup()
     onSessionEnd_callCount = 0
 
     &iskeyword = sessionstore.savedIskeyword

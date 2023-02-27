@@ -181,6 +181,7 @@ export def ShowPopup(curWord: string): void
         zindex: 1000,
         wrap: false,
         highlight: 'ChaseWord',
+        moved: [0, 0, 0],
     })
     var indexInWords = (
             regexSessionStore.precomputedWords->index(sessionstore.initialWord) 
@@ -196,4 +197,8 @@ export def ShowPopup(curWord: string): void
         1991, # random number here
         {window: popupWinId}
     )
+enddef
+
+export def HidePopup(): void
+    popup_close(popupWinId)
 enddef
