@@ -55,7 +55,8 @@ enddef
 export def OnRunStart(): void
     ResetSessionEndTrigger()
     if (sessionstore.isSessionStarted)
-        undojoin
+        # need 'silent!' to supress 'cant undojoin after undo' error message
+        silent! undojoin
     endif
 enddef
 
