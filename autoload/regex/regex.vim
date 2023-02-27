@@ -15,6 +15,8 @@ vim9script
 # 5. (In vimrc) Add new case to corresponding casesOrder (g:sentenceCasesOrder, g:wordCasesOrder or g:letterCasesOrder)
 
 import '../getconfig.vim' 
+import '../sessionstore.vim'
+import '../highlightdiff.vim'
 
 import './case/camel.vim'
 import './case/camel_abbr.vim'
@@ -175,11 +177,18 @@ export def ShowPopup(curWord: string): void
     var winHeight = winheight(winnr())
     popupWinId = popup_atcursor(regexSessionStore.precomputedWords, {
         pos: (winHeight - curLine >= popupHeight ? 'topleft' : 'botleft'),
+        col: screenpos(win_getid(winnr()), line('.'), sessionstore.lineBegin->len()).col + 1,
         zindex: 1000,
         wrap: false,
         highlight: 'ChaseWord',
     })
-    var indexInWords = regexSessionStore.precomputedWords->index(curWord)
+    var indexInWords = (
+            regexSessionStore.precomputedWords->index(sessionstore.initialWord) 
+            + regexSessionStore.count
+        ) % regexSessionStore.precomputedWords->len()
+    if (!hlexists('ChaseChangedletter'))
+        highlightdiff.DeclareHighlightGroups()
+    endif
     matchadd(
         'ChaseChangedletter',
         '\%' .. (indexInWords + 1) .. 'l',

@@ -20,7 +20,7 @@ def SetHighlightEndTrigger(): void
 enddef
 
 var isHighlightsDeclared = false
-def DeclareHighlightGroups(): void
+export def DeclareHighlightGroups(): void
     # highlights may be declared in vim config
     if (!hlexists('ChaseWord'))
         highlight ChaseWord guibg=#C7A575
