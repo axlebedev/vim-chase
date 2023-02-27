@@ -172,11 +172,8 @@ export def ShowPopup(curWord: string): void
     popup_close(popupWinId)
 
     var popupHeight = regexSessionStore.precomputedWords->len()
-    var curLine = winline()
-    var curCol = getcursorcharpos()[2]
-    var winHeight = winheight(winnr())
     popupWinId = popup_atcursor(regexSessionStore.precomputedWords, {
-        pos: (winHeight - curLine >= popupHeight ? 'topleft' : 'botleft'),
+        pos: (winheight(winnr()) - winline() >= popupHeight ? 'topleft' : 'botleft'),
         col: screenpos(win_getid(winnr()), line('.'), sessionstore.lineBegin->len()).col + 1,
         zindex: 1000,
         wrap: false,
