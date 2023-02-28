@@ -48,7 +48,12 @@ def OnSessionEnd(): void
 
     sessionstore.isSessionStarted = false
 
-    regex.OnRegexSessionEnd()
+    sessionstore.parts = []
+    sessionstore.group = sessionstore.groups.undefined
+    sessionstore.case = {}
+    sessionstore.count = 0
+    sessionstore.precomputedWords = []
+
     ResetSessionEndTrigger()
 enddef
 

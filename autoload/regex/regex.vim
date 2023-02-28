@@ -31,33 +31,6 @@ import './case/upper_space.vim'
 import './case/upper_underscore.vim'
 import './case/password.vim'
 
-var groups = {
-    undefined: 'group-undefined',
-    letter: 'group-letter',
-    word: 'group-word',
-    sentence: 'group-sentence',
-}
-
-# =============================================================================
-
-# regex has its own store for session
-var regexSessionStore = {
-    parts: [],
-    group: groups.undefined,
-    case: undefinedCase.undefinedCase,
-    count: 0,
-    precomputedWords: [],
-}
-
-# This one will be called on end of session, from SessionController
-export def OnRegexSessionEnd(): void
-    regexSessionStore.parts = []
-    regexSessionStore.group = groups.undefined
-    regexSessionStore.case = undefinedCase.undefinedCase
-    regexSessionStore.count = 0
-    regexSessionStore.precomputedWords = []
-enddef
-
 # =============================================================================
 
 var casesArray = [
@@ -89,9 +62,9 @@ def FindCaseByName(name: string): dict<any> # TODO: return type
 enddef
 
 def GetCasesOrderByGroup(group: string): list<string>
-    if (group == groups.letter)
+    if (group == sessionstore.groups.letter)
         return getconfig.GetConfig('letterCasesOrder')
-    elseif (group == groups.word)
+    elseif (group == sessionstore.groups.word)
         return getconfig.GetConfig('wordCasesOrder')
     endif
     return getconfig.GetConfig('sentenceCasesOrder')
@@ -101,19 +74,19 @@ enddef
 
 def GetWordGroup(word: string): string
     if (word !~? '\v[[:lower:][:upper:]]')
-        return groups.undefined
+        return sessionstore.groups.undefined
     elseif (word->len() < 2)
-        return groups.letter
+        return sessionstore.groups.letter
     elseif (
         word =~# '\v\C^[[:upper:][:digit:]]+$' 
         || word =~# '\v\C^[[:lower:][:digit:]]+$'
         || word =~# '\v\C^[[:upper:]][[:lower:][:digit:]]+$'
     )
         # if only upper or digits or only lower and digits - this is single word
-        return groups.word
+        return sessionstore.groups.word
     endif
 
-    return groups.sentence 
+    return sessionstore.groups.sentence 
 enddef
 
 def GetWordCase(word: string, group: string): dict<any>
@@ -134,7 +107,7 @@ def GetWordCase(word: string, group: string): dict<any>
 enddef
 
 def GetPrecomputedWords(oldWord: string, oldGroup: string, oldCase: dict<any>): list<string>
-    if (oldGroup == groups.undefined)
+    if (oldGroup == sessionstore.groups.undefined)
         return []
     endif
     var parts = oldCase.StringToParts(oldWord)
@@ -147,21 +120,21 @@ def GetPrecomputedWords(oldWord: string, oldGroup: string, oldCase: dict<any>): 
 enddef
 
 export def GetNextWord(oldWord: string, isPrev: bool): string
-    if (regexSessionStore.count == 0)
-        regexSessionStore.group = GetWordGroup(oldWord)
-        regexSessionStore.case = GetWordCase(oldWord, regexSessionStore.group)
-        regexSessionStore.parts = regexSessionStore.case.StringToParts(oldWord)
-        regexSessionStore.precomputedWords = GetPrecomputedWords(oldWord, regexSessionStore.group, regexSessionStore.case)
+    if (sessionstore.count == 0)
+        sessionstore.group = GetWordGroup(oldWord)
+        sessionstore.case = GetWordCase(oldWord, sessionstore.group)
+        sessionstore.parts = sessionstore.case.StringToParts(oldWord)
+        sessionstore.precomputedWords = GetPrecomputedWords(oldWord, sessionstore.group, sessionstore.case)
     endif
-    if (regexSessionStore.group == groups.undefined)
+    if (sessionstore.group == sessionstore.groups.undefined)
         return oldWord
     endif
     
-    regexSessionStore.count += isPrev ? -1 : 1
+    sessionstore.count = sessionstore.count + (isPrev ? -1 : 1)
 
-    var words = regexSessionStore.precomputedWords
+    var words = sessionstore.precomputedWords
     var newWord = words[
-        (words->index(oldWord) + regexSessionStore.count) % words->len()
+        (words->index(oldWord) + sessionstore.count) % words->len()
     ]
 
     return newWord
@@ -172,7 +145,7 @@ export def ShowPopup(curWord: string): void
     popup_close(popupWinId)
 
     # For correct highlight, with paddings
-    var precomputedWordsToShow = regexSessionStore.precomputedWords
+    var precomputedWordsToShow = sessionstore.precomputedWords
         ->copy()
         ->map((i, word) => ' ' .. word .. ' ') # add paddings, for beautiful popup 
 
@@ -185,7 +158,7 @@ export def ShowPopup(curWord: string): void
                 return paddedWord
             }) # add padding-right of spaces, for hightlight
 
-    var popupHeight = regexSessionStore.precomputedWords->len()
+    var popupHeight = sessionstore.precomputedWords->len()
     popupWinId = popup_atcursor(
         precomputedWordsToShow,
         {
@@ -198,9 +171,9 @@ export def ShowPopup(curWord: string): void
         }
     )
     var indexInWords = (
-            regexSessionStore.precomputedWords->index(sessionstore.initialWord) 
-            + regexSessionStore.count
-        ) % regexSessionStore.precomputedWords->len()
+            sessionstore.precomputedWords->index(sessionstore.initialWord) 
+            + sessionstore.count
+        ) % sessionstore.precomputedWords->len()
     if (!hlexists('ChaseChangedletter'))
         highlightdiff.DeclareHighlightGroups()
     endif
