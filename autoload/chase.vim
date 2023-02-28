@@ -31,6 +31,7 @@ import './regex/regex.vim'
 import './sessioncontroller.vim'
 import './highlightdiff.vim'
 import './sessionstore.vim'
+import './popup.vim'
 
 def ReplaceWithNext(isPrev: bool): void
     sessioncontroller.OnRunStart()
@@ -48,7 +49,7 @@ def ReplaceWithNext(isPrev: bool): void
         sessionstore.currentWord = newWord
     endif
 
-    regex.ShowPopup(newWord)
+    popup.ShowPopup(newWord)
     sessioncontroller.OnRunEnd()
 enddef
 

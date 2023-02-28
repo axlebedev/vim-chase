@@ -4,6 +4,7 @@ import './regex/regex.vim'
 import './sessionstore.vim'
 import './helpers.vim'
 import './getconfig.vim'
+import './popup.vim'
 
 def ResetSessionEndTrigger(): void
     augroup au_vimchase
@@ -41,7 +42,7 @@ def OnSessionEnd(): void
         onSessionEnd_callCount = 1
         return
     endif
-    regex.HidePopup()
+    popup.HidePopup()
     onSessionEnd_callCount = 0
 
     &iskeyword = sessionstore.savedIskeyword
