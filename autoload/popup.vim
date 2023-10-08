@@ -6,6 +6,9 @@ import './highlightdiff.vim'
 var popupWinId = 0
 export def ShowPopup(curWord: string): void
     popup_close(popupWinId)
+    if (sessionstore.precomputedWords->len() == 0)
+        return
+    endif
 
     # For correct highlight, with paddings
     var precomputedWordsToShow = sessionstore.precomputedWords
