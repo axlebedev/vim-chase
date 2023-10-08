@@ -15,7 +15,7 @@ enddef
 def SetSessionEndTrigger(): void
     augroup au_vimchase
         autocmd!
-        autocmd CursorMoved * OnSessionEnd()
+        autocmd CursorMoved,CursorMovedI,InsertEnter * OnSessionEnd()
     augroup END
 enddef
 
