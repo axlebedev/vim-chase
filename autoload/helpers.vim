@@ -50,6 +50,11 @@ export def GetCurrrentLineBegin(): string
         if (curpos > 1)
             return line[ : curpos - 1]
         endif
+
+        if (curpos == 1 && line->GetCharAtPos(0) !~ '\k')
+            return line[0]
+        endif
+
         return ''
     endif
 
@@ -67,11 +72,15 @@ export def GetCurrrentLineEnd(): string
     if (sessionstore.initialMode == 'n')
         setcursorcharpos(line('.'), GetStartPosOfCurrentWord())
         var curpos = getcursorcharpos()[2]
-
         var secondHalf = line
         if (curpos > 1)
             secondHalf = line[curpos : ]
         endif
+
+        if (curpos == 1 && line->GetCharAtPos(0) !~ '\k')
+            secondHalf = line[curpos : ]
+        endif
+
         var escapedWord = '\V' .. escape(sessionstore.initialWord, '\')
         return secondHalf->substitute(escapedWord, '', '')
     endif
