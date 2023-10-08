@@ -10,7 +10,7 @@ g:loaded_chase = 1
 g:sentenceCasesOrder = get(g:, 'chaseSentenceCasesOrder', [
     'dash',
     'snake',
-    'camel',
+    # 'camel',
     'camel_abbr',
     'pascal',
     'upper',
