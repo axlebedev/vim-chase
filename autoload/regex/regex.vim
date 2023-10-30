@@ -27,6 +27,7 @@ import './case/pascal.vim'
 import './case/title.vim'
 import './case/undefined.vim' as undefinedCase
 import './case/upper.vim'
+import './case/upper_dash.vim'
 import './case/upper_space.vim'
 import './case/upper_underscore.vim'
 import './case/password.vim'
@@ -42,6 +43,7 @@ var casesArray = [
     lower_dash.lower_dash,
     lower_underscore.lower_underscore,
     pascal.pascal,
+    upper_dash.upper_dash,
     upper_underscore.upper_underscore,
     upper_space.upper_space,
     password.password,

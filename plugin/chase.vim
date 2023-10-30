@@ -8,15 +8,17 @@ endif
 g:loaded_chase = 1
 
 g:sentenceCasesOrder = get(g:, 'chaseSentenceCasesOrder', [
-    'dash',
-    'snake',
     # 'camel',
     'camel_abbr',
     'pascal',
-    'upper',
-    'password',
+    'lower_space',
+    'lower_dash',
+    'lower_underscore',
+    'upper_underscore',
+    'upper_dash',
     'upper_space',
     'title',
+    'password',
 ])
 
 g:wordCasesOrder = get(g:, 'chaseWordCasesOrder', [
