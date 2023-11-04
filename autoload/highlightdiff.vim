@@ -123,10 +123,6 @@ export def ClearHighlights(isOnCursorMove = false): void
     matchIds->map((index, id) => matchdelete(id))
     matchIds = []
     
-    if (sessionstore.initialMode == 'v' && mode() != 'v')
-        normal! gv
-    endif
-
     ResetHighlightEndTrigger()
 enddef
 
