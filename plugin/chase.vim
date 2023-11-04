@@ -36,8 +36,13 @@ g:letterCasesOrder = get(g:, 'chaseLetterCasesOrder', [
 
 g:highlightTimeout = get(g:, 'chaseHighlightTimeout', 2000)
 
-if !get(g:, 'chase_nomap', 0)
+if !get(g:, 'chaseNomap', 0)
     nnoremap ~ <CMD>call <SID>chase.Next()<CR>
     vnoremap ~ <CMD>call <SID>chase.Next()<CR>
     nnoremap ! <CMD>call <SID>chase.Prev()<CR>
+    vnoremap ! <CMD>call <SID>chase.Prev()<CR>
 endif
+
+command -bar ChaseNext call <SID>chase.Next()
+command -bar ChasePrev call <SID>chase.Prev()
+command -bar ChasePrintAllCases call <SID>chase.PrintAllCases()

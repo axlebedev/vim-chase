@@ -60,3 +60,8 @@ enddef
 export def Prev(): void
     ReplaceWithNext(true)
 enddef
+
+# re-export from 'regex.vim' to avoid circular dependency errors
+export def PrintAllCases(): void
+    regex.PrintAllCases()
+enddef

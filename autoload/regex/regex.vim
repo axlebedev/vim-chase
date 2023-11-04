@@ -141,3 +141,9 @@ export def GetNextWord(oldWord: string, isPrev: bool): string
 
     return newWord
 enddef
+
+export def PrintAllCases(): void
+    for case in casesArray
+        echom case.name
+    endfor
+enddef
