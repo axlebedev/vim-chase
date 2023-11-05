@@ -30,6 +30,9 @@ g:chaseRespectAbbreviation
 <!-- Older highlights will be dimmed to 'Normal' background according to `g:footprintsEasingFunction`.   -->
 <!-- `let g:footprintsColor = '#275970'` -->
 
+highlight ChaseWord
+highlight ChaseSeparator
+highlight ChaseChangedletter
 ---
 
 ### COMMANDS

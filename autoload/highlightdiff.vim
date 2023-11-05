@@ -23,13 +23,13 @@ var isHighlightsDeclared = false
 export def DeclareHighlightGroups(): void
     # highlights may be declared in vim config
     if (!hlexists('ChaseWord'))
-        highlight ChaseWord guibg=#C7A575
-    endif
-    if (!hlexists('ChaseSeparator'))
-        highlight ChaseSeparator guibg=#FF9999
+        highlight link ChaseWord Pmenu
     endif
     if (!hlexists('ChaseChangedletter'))
-        highlight ChaseChangedletter guibg=#99FF99
+        highlight link ChaseChangedletter Search
+    endif
+    if (!hlexists('ChaseSeparator'))
+        highlight link ChaseSeparator ChaseChangedletter
     endif
     isHighlightsDeclared = true
 enddef

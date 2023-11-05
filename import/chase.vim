@@ -14,7 +14,7 @@ g:loaded_chase = 1
 import autoload '../autoload/chase.vim'
 
 g:chaseRespectAbbreviation = get(g:, 'chaseRespectAbbreviation', 1)
-g:highlightTimeout = get(g:, 'chaseHighlightTimeout', 2000)
+g:chaseHighlightTimeout = get(g:, 'chaseHighlightTimeout', 2000)
 
 g:chaseSentenceCasesOrder = get(g:, 'chaseSentenceCasesOrder', [
     'camel',
