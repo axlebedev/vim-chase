@@ -3,6 +3,14 @@ vim9script
 import './sessionstore.vim'
 import './highlightdiff.vim'
 
+def PositiveModulus(a: number, b: number): number
+    var modulus = a % b
+    if (modulus > 0)
+        return modulus
+    endif
+    return (modulus + b) % b
+enddef
+
 var popupWinId = 0
 export def ShowPopup(curWord: string): void
     popup_close(popupWinId)
@@ -36,10 +44,12 @@ export def ShowPopup(curWord: string): void
             moved: [0, 0, 0],
         }
     )
-    var indexInWords = (
-            sessionstore.precomputedWords->index(sessionstore.initialWord) 
-            + sessionstore.count
-        ) % sessionstore.precomputedWords->len()
+
+    var dirtyIndex = sessionstore.precomputedWords->index(sessionstore.initialWord)
+    var indexInWords = PositiveModulus(
+        dirtyIndex + sessionstore.count,
+        sessionstore.precomputedWords->len(),
+    )
     if (!hlexists('ChaseChangedletter'))
         highlightdiff.DeclareHighlightGroups()
     endif
