@@ -2,7 +2,7 @@ vim9script
 
 import '../func.vim'
 
-var sentenceCamel = '\v\C^[[:lower:]][[:lower:][:digit:]]*([[:upper:]][[:lower:][:digit:]]+)+$'
+var sentenceCamel = '\v\C^[[:lower:]][[:lower:][:digit:]]*([[:upper:]][[:lower:][:digit:]]*)+$'
 var name = ['camel']
 
 def StringToParts(word: string): list<string>
@@ -15,7 +15,9 @@ def StringToParts(word: string): list<string>
 enddef
 
 def PartsToString(parts: list<string>): string
-    return (parts[0 : 0]->map(func.MapToLower) + parts[1 :]->map(func.MapToCapital))->join('')
+    var MapToLowerFunc = get(g:, 'chaseRespectAbbreviation') ? func.MapToLowerIfNotUpper : func.MapToLower
+    var MapToCapitalFunc = get(g:, 'chaseRespectAbbreviation') ? func.MapToCapitalIfNotUpper : func.MapToCapital
+    return (parts[0 : 0]->map(MapToLowerFunc) + parts[1 :]->map(MapToCapitalFunc))->join('')
 enddef
 
 export var camel = {

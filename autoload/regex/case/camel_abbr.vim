@@ -15,7 +15,9 @@ def StringToParts(word: string): list<string>
 enddef
 
 def PartsToString(parts: list<string>): string
-    return (parts[0 : 0]->map(func.MapToLowerIfNotUpper) + parts[1 :]->map(func.MapToCapitalIfNotUpper))->join('')
+    var MapToLowerFunc = get(g:, 'chaseRespectAbbreviation') ? func.MapToLowerIfNotUpper : func.MapToLower
+    var MapToCapitalFunc = get(g:, 'chaseRespectAbbreviation') ? func.MapToCapitalIfNotUpper : func.MapToCapital
+    return (parts[0 : 0]->map(MapToLowerFunc) + parts[1 :]->map(MapToCapitalFunc))->join('')
 enddef
 
 export var camel_abbr = {

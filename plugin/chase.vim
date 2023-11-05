@@ -18,8 +18,7 @@ if !exists("g:chaseRespectAbbreviation")
 endif
 
 g:sentenceCasesOrder = get(g:, 'chaseSentenceCasesOrder', [
-    # 'camel',
-    'camel_abbr',
+    'camel',
     'pascal',
     'lower_space',
     'lower_dash',
