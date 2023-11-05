@@ -10,7 +10,7 @@ def StringToParts(word: string): list<string>
 enddef
 
 def PartsToString(parts: list<string>): string
-    return parts->map(func.MapToUpper)->join('-')
+    return parts->map(func.MapToUpper)->join(' ')
 enddef
 
 export var upper = {
