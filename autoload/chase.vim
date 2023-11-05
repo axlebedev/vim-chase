@@ -27,7 +27,7 @@ vim9script
 # 10.   TODO: Сделать аргумент функции, чтобы можно было сделать вызов с кастомной последовательностью
 # 11.   TODO: Сделать readme
 # 16.   TODO: Добавить конфиг цветов WARN! autocmd ColorScheme * \ highlight ChaseWord guibg=#0000FF
-# 19.   TODO: Запилить проверку что мы выделили текст внутри одной строки
+# 19. + TODO: Запилить проверку что мы выделили текст внутри одной строки
 # 22.   TODO: Setting to respect abbriveations
 # 25    TODO: Опция, чтобы на первом нажатии ничего не менял а только показывал попап
 
@@ -36,6 +36,21 @@ import './sessioncontroller.vim'
 import './highlightdiff.vim'
 import './sessionstore.vim'
 import './popup.vim'
+
+# return error if selection is multi line
+def CheckSelection(): bool
+    if (mode() == 'n')
+        return true
+    endif
+
+    if (getpos('v')[1] != getpos('.')[1])
+        execute "normal! \<Esc>"
+        echom 'VimChase: only single line selections allowed'
+        return false
+    endif
+
+    return true
+enddef
 
 def ReplaceWithNext(isPrev: bool): void
     sessioncontroller.OnRunStart()
@@ -58,10 +73,17 @@ def ReplaceWithNext(isPrev: bool): void
 enddef
 
 export def Next(): void
+    if (!CheckSelection())
+        return
+    endif
+
     ReplaceWithNext(false)
 enddef
 
 export def Prev(): void
+    if (!CheckSelection())
+        return
+    endif
     ReplaceWithNext(true)
 enddef
 
