@@ -2,7 +2,7 @@ vim9script
 
 import '../func.vim'
 
-var sentencePascal = '\v\C^[[:upper:]]+[[:lower:][:digit:]]*([[:upper:][:digit:]]+[[:lower:][:digit:]]+)+[[:upper:]]*$'
+var sentencePascal = '\v\C^[[:upper:]]+[[:lower:][:digit:]]*([[:upper:]]+[[:lower:][:digit:]]*)*$'
 var name = ['pascal']
 
 def StringToParts(word: string): list<string>
@@ -15,7 +15,8 @@ def StringToParts(word: string): list<string>
 enddef
 
 def PartsToString(parts: list<string>): string
-    return parts->map(func.MapToCapital)->join('')
+    var MapToCapitalFunc = get(g:, 'chaseRespectAbbreviation') ? func.MapToCapitalIfNotUpper : func.MapToCapital
+    return parts->map(MapToCapitalFunc)->join('')
 enddef
 
 export var pascal = {
