@@ -14,7 +14,8 @@ def StringToParts(word: string): list<string>
 enddef
 
 def PartsToString(parts: list<string>): string
-    return parts->map(func.MapToCapital)->join(' ')
+    var MapToCapitalFunc = get(g:, 'chaseRespectAbbreviation') ? func.MapToCapitalIfNotUpper : func.MapToCapital
+    return parts->map(MapToCapitalFunc)->join(' ')
 enddef
 
 export var title = {
