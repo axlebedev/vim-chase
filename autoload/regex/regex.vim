@@ -63,11 +63,42 @@ def FindCaseByName(name: string): dict<any> # TODO: return type
     return undefinedCase.undefinedCase
 enddef
 
-def GetCasesOrderByGroup(group: string): list<string>
+def GetCasesOrderByGroup(group: string, forGetWordCase: bool = false): list<string>
+    # 'forGetWordCase': when we find initial word's case - we ignore users
+    # settings and search all, for correct StringToParts, so use hardcoded arrays
     if (group == sessionstore.groups.letter)
+        if (forGetWordCase)
+            return [
+                lower.lower.name[0],
+                upper.upper.name[0],
+                undefinedCase.undefinedCase.name[0],
+            ]
+        endif
         return getconfig.GetConfig('chaseLetterCasesOrder')
     elseif (group == sessionstore.groups.word)
+        if (forGetWordCase)
+            return [
+                lower.lower.name[0],
+                upper.upper.name[0],
+                title.title.name[0],
+                undefinedCase.undefinedCase.name[0],
+            ]
+        endif
         return getconfig.GetConfig('chaseWordCasesOrder')
+    endif
+    if (forGetWordCase)
+        return [
+            title.title.name[0],
+            camel.camel.name[0],
+            lower_dash.lower_dash.name[0],
+            lower_space.lower_space.name[0],
+            lower_underscore.lower_underscore.name[0],
+            pascal.pascal.name[0],
+            upper_dash.upper_dash.name[0],
+            upper_underscore.upper_underscore.name[0],
+            upper_space.upper_space.name[0],
+            undefinedCase.undefinedCase.name[0],
+        ]
     endif
     return getconfig.GetConfig('chaseSentenceCasesOrder')
 enddef
@@ -93,7 +124,7 @@ enddef
 
 def GetWordCase(word: string, group: string): dict<any>
     var cases = []
-    for name in GetCasesOrderByGroup(group)
+    for name in GetCasesOrderByGroup(group, true)
         cases->add(FindCaseByName(name))
     endfor
 
