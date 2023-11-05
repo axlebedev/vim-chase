@@ -63,4 +63,9 @@ enddef
 
 command -bar ChaseNext call <SID>chase.Next()
 command -bar ChasePrev call <SID>chase.Prev()
+
+
+export def PrintAllCases(): void
+    chase.PrintAllCases()
+enddef
 command -bar ChasePrintAllCases call <SID>chase.PrintAllCases()
