@@ -17,11 +17,12 @@ Example of installation and setting configs
 ---
 
 ### CONFIGURATION
-g:sentenceCasesOrder
-g:wordCasesOrder
-g:letterCasesOrder
-g:highlightTimeout
+g:chaseSentenceCasesOrder
+g:chaseWordCasesOrder
+g:chaseLetterCasesOrder
+g:chaseHighlightTimeout
 g:chaseNomap
+g:chaseRespectAbbreviation
 
 <!-- ##### `g:footprintsColor` -->
 <!-- Default: `'#3A3A3A'` or `'#C1C1C1'` depending on `&background` setting   -->

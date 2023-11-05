@@ -1,11 +1,21 @@
+if !has("vim9script") || v:version < 900
+    echoerr "VimChase: need support vim9script!"
+    finish
+endif
+
 vim9script
 
-import autoload '../autoload/chase.vim'
-
-if exists("g:loaded_chase") || &cp || v:version < 900
+if exists("g:loaded_chase")
     finish
 endif
 g:loaded_chase = 1
+
+
+import autoload '../autoload/chase.vim'
+
+if !exists("g:chaseRespectAbbreviation")
+    g:chaseRespectAbbreviation = 1
+endif
 
 g:sentenceCasesOrder = get(g:, 'chaseSentenceCasesOrder', [
     # 'camel',
