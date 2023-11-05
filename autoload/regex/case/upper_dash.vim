@@ -6,7 +6,11 @@ var sentenceUpper = '\v\C^[[:upper:]][[:upper:][:digit:]]*(-[[:upper:][:digit:]]
 var name = ['upper_dash']
 
 def StringToParts(word: string): list<string>
-    return [word]->map(func.MapToLower)
+    var parts = word
+        ->substitute('\C[^[:digit:][:lower:][:upper:]]', '-', 'g')
+        ->split('_')
+
+    return parts->map(func.MapToLower)
 enddef
 
 def PartsToString(parts: list<string>): string
