@@ -174,7 +174,8 @@ export def GetNextWord(oldWord: string, isPrev: bool): string
 enddef
 
 export def PrintAllCases(): void
+    var parts = ['you', 'are', 'the', 'best']
     for case in casesArray
-        echom case.name
+        echom case.name .. ' --- ' .. case.PartsToString(parts->copy())
     endfor
 enddef
