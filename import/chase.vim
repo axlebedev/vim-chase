@@ -17,6 +17,10 @@ if !exists("g:chaseRespectAbbreviation")
     g:chaseRespectAbbreviation = 1
 endif
 
+if !exists("g:chaseDontShowPopupIfOnlyOneOption")
+    g:chaseDontShowPopupIfOnlyOneOption = 1
+endif
+
 g:chaseSentenceCasesOrder = get(g:, 'chaseSentenceCasesOrder', [
     'camel',
     'pascal',

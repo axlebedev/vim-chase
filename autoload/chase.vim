@@ -30,6 +30,7 @@ vim9script
 # 19. + TODO: Запилить проверку что мы выделили текст внутри одной строки
 # 22. + TODO: Setting to respect abbriveations
 # 25    TODO: Опция, чтобы на первом нажатии ничего не менял а только показывал попап
+# 26  + TODO: Опция, чтобы если всего один кейс в списке - то не показывал попап
 
 import './regex/regex.vim'
 import './sessioncontroller.vim'
@@ -69,7 +70,9 @@ def ReplaceWithNext(isPrev: bool): void
         sessionstore.currentWord = newWord
     endif
 
-    popup.ShowPopup(newWord)
+    if (!(get(g:, 'chaseDontShowPopupIfOnlyOneOption') && sessionstore.precomputedWords->len() < 2))
+        popup.ShowPopup(newWord)
+    endif
     sessioncontroller.OnRunEnd()
 enddef
 
