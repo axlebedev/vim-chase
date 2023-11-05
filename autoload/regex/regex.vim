@@ -5,7 +5,7 @@ vim9script
 # 1. (In folder 'autoload/regex/case') Copypaste any file
 # 2. (In new file) Main work: change values in that file: 
 #     - regex
-#     - array of names of this case (Warning: it should not repeat any of existing one)
+#     - name of case
 #     - function 'StringToParts': how incoming string should be divided into parts 
 #       example for camelCase: 'oneTWOThree' => ['one','TWO','three']
 #       every word should be in lowercase, abbriveation - in upper case
@@ -55,7 +55,7 @@ var casesArray = [
 def FindCaseByName(name: string): dict<any> # TODO: return type
     var i = 0
     while (i < casesArray->len())
-        if (casesArray[i].name->index(name) > -1)
+        if (casesArray[i].name == name)
             return casesArray[i]
         endif
         i += 1
@@ -69,35 +69,35 @@ def GetCasesOrderByGroup(group: string, forGetWordCase: bool = false): list<stri
     if (group == sessionstore.groups.letter)
         if (forGetWordCase)
             return [
-                lower.lower.name[0],
-                upper.upper.name[0],
-                undefinedCase.undefinedCase.name[0],
+                lower.lower.name,
+                upper.upper.name,
+                undefinedCase.undefinedCase.name,
             ]
         endif
         return getconfig.GetConfig('chaseLetterCasesOrder')
     elseif (group == sessionstore.groups.word)
         if (forGetWordCase)
             return [
-                lower.lower.name[0],
-                upper.upper.name[0],
-                title.title.name[0],
-                undefinedCase.undefinedCase.name[0],
+                lower.lower.name,
+                upper.upper.name,
+                title.title.name,
+                undefinedCase.undefinedCase.name,
             ]
         endif
         return getconfig.GetConfig('chaseWordCasesOrder')
     endif
     if (forGetWordCase)
         return [
-            title.title.name[0],
-            camel.camel.name[0],
-            lower_dash.lower_dash.name[0],
-            lower_space.lower_space.name[0],
-            lower_underscore.lower_underscore.name[0],
-            pascal.pascal.name[0],
-            upper_dash.upper_dash.name[0],
-            upper_underscore.upper_underscore.name[0],
-            upper_space.upper_space.name[0],
-            undefinedCase.undefinedCase.name[0],
+            title.title.name,
+            camel.camel.name,
+            lower_dash.lower_dash.name,
+            lower_space.lower_space.name,
+            lower_underscore.lower_underscore.name,
+            pascal.pascal.name,
+            upper_dash.upper_dash.name,
+            upper_underscore.upper_underscore.name,
+            upper_space.upper_space.name,
+            undefinedCase.undefinedCase.name,
         ]
     endif
     return getconfig.GetConfig('chaseSentenceCasesOrder')

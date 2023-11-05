@@ -3,7 +3,7 @@ vim9script
 import '../func.vim'
 
 var sentenceCamel = '\v\C^[[:lower:]][[:lower:][:digit:]]*([[:upper:]][[:lower:][:digit:]]*)+$'
-var name = ['camel']
+var name = 'camel'
 
 def StringToParts(word: string): list<string>
     var parts = word

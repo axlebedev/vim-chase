@@ -3,7 +3,7 @@ vim9script
 import '../func.vim'
 
 var sentenceSnake = '\v\C^[[:lower:]][[:lower:][:digit:]]*(_[[:lower:][:digit:]]*)+$'
-var name = ['snake', 'lower_underscore']
+var name = 'lower_underscore'
 
 def StringToParts(word: string): list<string>
     var parts = word

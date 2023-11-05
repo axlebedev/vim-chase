@@ -3,7 +3,7 @@ vim9script
 import '../func.vim'
 
 var sentenceSpace = '\v\C^[[:lower:]][[:lower:][:digit:]]+( +[[:lower:][:digit:]]+)+$'
-var name = ['lower_space']
+var name = 'lower_space'
 
 def StringToParts(word: string): list<string>
     var parts = word

@@ -3,7 +3,7 @@ vim9script
 import '../func.vim'
 
 var sentenceUndefined = '\v\C^.*$'
-var name = ['undefined']
+var name = 'undefined'
 
 def StringToParts(word: string): list<string>
     var parts = word

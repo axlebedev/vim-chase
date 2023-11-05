@@ -3,7 +3,7 @@ vim9script
 import '../func.vim'
 
 var sentenceUpper = '\v\C^[[:upper:]][[:upper:][:digit:]]*(_[[:upper:][:digit:]]+)+$'
-var name = ['upper_underscore']
+var name = 'upper_underscore'
 
 def StringToParts(word: string): list<string>
     var parts = word

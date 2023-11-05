@@ -3,7 +3,7 @@ vim9script
 import '../func.vim'
 
 var sentenceUpper = '\v\C^[[:upper:][:digit:]]+$'
-var name = ['upper']
+var name = 'upper'
 
 def StringToParts(word: string): list<string>
     return [word]->map(func.MapToLower)

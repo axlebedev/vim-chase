@@ -3,7 +3,7 @@ vim9script
 import '../func.vim'
 
 var sentencePassword = '\v\C^\*+$'
-var name = ['password']
+var name = 'password'
 
 def StringToParts(word: string): list<string>
     return [word]

@@ -3,7 +3,7 @@ vim9script
 import '../func.vim'
 
 var sentenceDash = '\v\C^[[:lower:][:digit:]]+(-+[[:lower:][:digit:]]+)+$'
-var name = ['dash', 'kebab', 'hyphen', 'lower_dash', 'lower_hyphen']
+var name = 'lower_dash'
 
 def StringToParts(word: string): list<string>
     var parts = word
