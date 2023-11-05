@@ -13,13 +13,8 @@ g:loaded_chase = 1
 
 import autoload '../autoload/chase.vim'
 
-if !exists("g:chaseRespectAbbreviation")
-    g:chaseRespectAbbreviation = 1
-endif
-
-if !exists("g:chaseDontShowPopupIfOnlyOneOption")
-    g:chaseDontShowPopupIfOnlyOneOption = 1
-endif
+g:chaseRespectAbbreviation = get(g:, 'chaseRespectAbbreviation', 1)
+g:highlightTimeout = get(g:, 'chaseHighlightTimeout', 2000)
 
 g:chaseSentenceCasesOrder = get(g:, 'chaseSentenceCasesOrder', [
     'camel',
@@ -43,8 +38,6 @@ g:chaseLetterCasesOrder = get(g:, 'chaseLetterCasesOrder', [
     'upper',
     'lower',
 ])
-
-g:highlightTimeout = get(g:, 'chaseHighlightTimeout', 2000)
 
 if !get(g:, 'chaseNomap', 0)
     nnoremap ~ <CMD>call <SID>chase.Next()<CR>
