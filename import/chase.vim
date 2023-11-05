@@ -17,7 +17,7 @@ if !exists("g:chaseRespectAbbreviation")
     g:chaseRespectAbbreviation = 1
 endif
 
-g:sentenceCasesOrder = get(g:, 'chaseSentenceCasesOrder', [
+g:chaseSentenceCasesOrder = get(g:, 'chaseSentenceCasesOrder', [
     'camel',
     'pascal',
     'lower_space',
@@ -27,20 +27,17 @@ g:sentenceCasesOrder = get(g:, 'chaseSentenceCasesOrder', [
     'upper_dash',
     'upper_space',
     'title',
-    'password',
 ])
 
-g:wordCasesOrder = get(g:, 'chaseWordCasesOrder', [
+g:chaseWordCasesOrder = get(g:, 'chaseWordCasesOrder', [
     'upper',
     'lower',
-    'password',
     'title',
 ])
 
-g:letterCasesOrder = get(g:, 'chaseLetterCasesOrder', [
+g:chaseLetterCasesOrder = get(g:, 'chaseLetterCasesOrder', [
     'upper',
     'lower',
-    'password',
 ])
 
 g:highlightTimeout = get(g:, 'chaseHighlightTimeout', 2000)
@@ -51,6 +48,14 @@ if !get(g:, 'chaseNomap', 0)
     nnoremap ! <CMD>call <SID>chase.Prev()<CR>
     vnoremap ! <CMD>call <SID>chase.Prev()<CR>
 endif
+
+export def ChaseNext(options: dict<any> = {})
+    chase.Next(options)
+enddef
+
+export def ChasePrev(options: dict<any> = {})
+    chase.Prev(options)
+enddef
 
 command -bar ChaseNext call <SID>chase.Next()
 command -bar ChasePrev call <SID>chase.Prev()

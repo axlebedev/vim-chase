@@ -151,7 +151,7 @@ export def HighlightDiff(oldWord: string, newWord: string): void
     endfor
 
     clearHighlightsTimerId = timer_start(
-        getconfig.GetConfig('highlightTimeout'),
+        getconfig.GetConfig('chaseHighlightTimeout'),
         (timerId) => ClearHighlights()
     )
     SetHighlightEndTrigger()

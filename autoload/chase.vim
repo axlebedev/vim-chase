@@ -24,7 +24,7 @@ vim9script
 # 23. + BUG: Баг, не слетает visual mode после движения курсора, если начали с visual mode
 # 24. + BUG: Баг, не работает undojoin, если начали с visual mode
 #
-# 10.   TODO: Сделать аргумент функции, чтобы можно было сделать вызов с кастомной последовательностью
+# 10. + TODO: Сделать аргумент функции, чтобы можно было сделать вызов с кастомной последовательностью
 # 11.   TODO: Сделать readme
 # 16.   TODO: Добавить конфиг цветов WARN! autocmd ColorScheme * \ highlight ChaseWord guibg=#0000FF
 # 19. + TODO: Запилить проверку что мы выделили текст внутри одной строки
@@ -33,6 +33,7 @@ vim9script
 
 import './regex/regex.vim'
 import './sessioncontroller.vim'
+import './getconfig.vim'
 import './highlightdiff.vim'
 import './sessionstore.vim'
 import './popup.vim'
@@ -72,19 +73,23 @@ def ReplaceWithNext(isPrev: bool): void
     sessioncontroller.OnRunEnd()
 enddef
 
-export def Next(): void
+export def Next(options: dict<any> = {}): void
+    getconfig.ParseOptions(options)
     if (!CheckSelection())
         return
     endif
 
     ReplaceWithNext(false)
+    getconfig.RestoreOptions()
 enddef
 
-export def Prev(): void
+export def Prev(options: dict<any> = {}): void
+    getconfig.ParseOptions(options)
     if (!CheckSelection())
         return
     endif
     ReplaceWithNext(true)
+    getconfig.RestoreOptions()
 enddef
 
 # re-export from 'regex.vim' to avoid circular dependency errors

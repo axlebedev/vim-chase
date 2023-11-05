@@ -77,7 +77,7 @@ export def OnRunEnd(): void
     if (sessionstore.initialMode == 'v')
         setpos("'<", [bufnr(), line('.'), sessionstore.lineBegin->strlen() + 1, 0])
         setpos("'>", [bufnr(), line('.'), getline('.')->len() - sessionstore.lineEnd->strlen(), 0])
-        if (getconfig.GetConfig('highlightTimeout') == 0)
+        if (getconfig.GetConfig('chaseHighlightTimeout') == 0)
             normal! gv
         endif
     endif

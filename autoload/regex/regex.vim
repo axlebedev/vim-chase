@@ -12,7 +12,7 @@ vim9script
 #     - function 'PartsToString': how incoming array of words should be squashed into one
 # 3. (In 'autoload/regex/regex') import new file
 # 4. (In 'autoload/regex/regex') Add new case to 'casesArray'
-# 5. (In vimrc) Add new case to corresponding casesOrder (g:sentenceCasesOrder, g:wordCasesOrder or g:letterCasesOrder)
+# 5. (In vimrc) Add new case to corresponding casesOrder (g:chaseSentenceCasesOrder, g:chaseWordCasesOrder or g:chaseLetterCasesOrder)
 
 import '../getconfig.vim' 
 import '../sessionstore.vim'
@@ -65,11 +65,11 @@ enddef
 
 def GetCasesOrderByGroup(group: string): list<string>
     if (group == sessionstore.groups.letter)
-        return getconfig.GetConfig('letterCasesOrder')
+        return getconfig.GetConfig('chaseLetterCasesOrder')
     elseif (group == sessionstore.groups.word)
-        return getconfig.GetConfig('wordCasesOrder')
+        return getconfig.GetConfig('chaseWordCasesOrder')
     endif
-    return getconfig.GetConfig('sentenceCasesOrder')
+    return getconfig.GetConfig('chaseSentenceCasesOrder')
 enddef
 
 # =============================================================================
