@@ -28,7 +28,7 @@ vim9script
 # 11.   TODO: Сделать readme
 # 16.   TODO: Добавить конфиг цветов WARN! autocmd ColorScheme * \ highlight ChaseWord guibg=#0000FF
 # 19. + TODO: Запилить проверку что мы выделили текст внутри одной строки
-# 22.   TODO: Setting to respect abbriveations
+# 22. + TODO: Setting to respect abbriveations
 # 25    TODO: Опция, чтобы на первом нажатии ничего не менял а только показывал попап
 
 import './regex/regex.vim'
