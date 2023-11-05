@@ -22,6 +22,7 @@ import './case/camel.vim'
 import './case/camel_abbr.vim'
 import './case/lower.vim'
 import './case/lower_dash.vim'
+import './case/lower_space.vim'
 import './case/lower_underscore.vim'
 import './case/pascal.vim'
 import './case/title.vim'
@@ -41,6 +42,7 @@ var casesArray = [
     camel.camel,
     camel_abbr.camel_abbr,
     lower_dash.lower_dash,
+    lower_space.lower_space,
     lower_underscore.lower_underscore,
     pascal.pascal,
     upper_dash.upper_dash,
