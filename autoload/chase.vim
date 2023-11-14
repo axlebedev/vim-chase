@@ -31,6 +31,7 @@ vim9script
 # 22. + TODO: Setting to respect abbriveations
 # 25    TODO: Опция, чтобы на первом нажатии ничего не менял а только показывал попап
 # 26  + TODO: Опция, чтобы если всего один кейс в списке - то не показывал попап
+# 27    TODO: Опция, чтобы обход всегда начинался с какого-то кейса
 
 import './regex/regex.vim'
 import './sessioncontroller.vim'
