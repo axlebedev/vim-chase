@@ -25,11 +25,11 @@ export def DeclareHighlightGroups(): void
     if (!hlexists('ChaseWord'))
         highlight link ChaseWord Pmenu
     endif
-    if (!hlexists('ChaseChangedletter'))
-        highlight link ChaseChangedletter Search
+    if (!hlexists('ChaseChangedLetter'))
+        highlight link ChaseChangedLetter Search
     endif
     if (!hlexists('ChaseSeparator'))
-        highlight link ChaseSeparator ChaseChangedletter
+        highlight link ChaseSeparator ChaseChangedLetter
     endif
     isHighlightsDeclared = true
 enddef
@@ -143,7 +143,7 @@ export def HighlightDiff(oldWord: string, newWord: string): void
     matchIds->add(matchadd('ChaseWord', '\%' .. curline .. 'l\%>' .. (startOfWord - 1) .. 'c\%<' .. (endOfWord + 1) .. 'c'))
     for i in indexes.changedletters
         var byte = byteidx(newWord, i) + startOfWord
-        matchIds->add(matchadd('ChaseChangedletter', '\%' .. curline .. 'l\%' .. byte .. 'c'))
+        matchIds->add(matchadd('ChaseChangedLetter', '\%' .. curline .. 'l\%' .. byte .. 'c'))
     endfor
     for i in indexes.separator
         var byte = byteidx(newWord, i) + startOfWord

@@ -50,11 +50,11 @@ export def ShowPopup(curWord: string): void
         dirtyIndex + sessionstore.count,
         sessionstore.precomputedWords->len(),
     )
-    if (!hlexists('ChaseChangedletter'))
+    if (!hlexists('ChaseChangedLetter'))
         highlightdiff.DeclareHighlightGroups()
     endif
     matchaddpos(
-        'ChaseChangedletter',
+        'ChaseChangedLetter',
         [indexInWords + 1],
         1000,
         1991, # random number here
