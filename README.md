@@ -7,7 +7,8 @@ Change word case, or *chase*: ***ch***ange c***ase***
 
 Plugin will define current word's case, and chane it starting from current case.
 
-TODO: video
+[vim-chase.webm](https://github.com/axlebedev/vim-chase/assets/3949614/69190284-da15-417e-b2cc-6071344bdcca)
+
 
 ## USAGE
 1. Place cursor at word, or visual select text (no multiline selections)
