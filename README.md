@@ -111,6 +111,7 @@ If current case is undefined - start from beginning of list
 `let g:chaseSentenceCasesOrder = ['upper_underscore', 'camel']`
 
 ## COLORS
+![vim-chase-highlights](https://github.com/axlebedev/vim-chase/assets/3949614/777ee4a0-20bb-4b4e-b038-4a7919b6f482)
 Customize colors for *chased* word:  
 `highlight ChaseWord guibg=#532120 guifg=NONE`  
 or  
