@@ -3,12 +3,9 @@
   Plug 'axlebedev/vim-chase'
 ```
 vim9script  
-Change word case, or *chase*: ***ch***ange c***ase***  
-
-Plugin will define current word's case, and chane it starting from current case.
+Change word case, or *chase*: ***ch***ange c***ase*** 
 
 [vim-chase.webm](https://github.com/axlebedev/vim-chase/assets/3949614/69190284-da15-417e-b2cc-6071344bdcca)
-
 
 ## USAGE
 1. Place cursor at word, or visual select text (no multiline selections)
@@ -141,7 +138,10 @@ Print all case names to 'echom'
 ## FUNCTIONS
 ```
 import 'chase.vim' as chase
+```
 
+#### `Next`, `Prev`
+```
 chase.Next(options = {})  
 chase.Prev(options = {})  
 ```
@@ -149,14 +149,18 @@ chase.Prev(options = {})
 Run "chase": change current word's case to next or prev.
 
 `options` is map, where you can pass any of configuration options only for one run.  
-It may include following configuration options:
-```
-    chaseRespectAbbreviation
-    chaseSentenceCasesOrder
-    chaseWordCasesOrder
-    chaseLetterCasesOrder
-    chaseHighlightTimeout
-```
+<details>
+<summary>It may include following configuration options:</summary>
+<pre>
+<code>
+chaseRespectAbbreviation
+chaseSentenceCasesOrder
+chaseWordCasesOrder
+chaseLetterCasesOrder
+chaseHighlightTimeout
+</code>
+</pre>
+</details>
 
 <details>
 <summary>Example</summary>
@@ -168,8 +172,7 @@ It may include following configuration options:
 <code>chase.Next({chaseWordCasesOrder: ['upper'], chaseSentenceCasesOrder: ['upper_underscore']})</code> - replace any variable with CONSTANT_CASE<br/>
 </details>
 
----
-
+#### `PrintAllCases`
 `chase.PrintAllCases()`
 Print all availble case names.
 
