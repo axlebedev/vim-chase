@@ -40,10 +40,10 @@ g:chaseLetterCasesOrder = get(g:, 'chaseLetterCasesOrder', [
 
 
 if !get(g:, 'chaseMapDefault', true)
-    nnoremap ~ <CMD>call <SID>chase.Next()<CR>
-    vnoremap ~ <CMD>call <SID>chase.Next()<CR>
-    nnoremap ! <CMD>call <SID>chase.Prev()<CR>
-    vnoremap ! <CMD>call <SID>chase.Prev()<CR>
+    nnoremap ~ <ScriptCmd>chase.Next()<cr>
+    vnoremap ~ <ScriptCmd>chase.Next()<cr>
+    nnoremap ! <ScriptCmd>chase.Prev()<cr>
+    vnoremap ! <ScriptCmd>chase.Prev()<cr>
 endif
 
 export def Next(options: dict<any> = {})
