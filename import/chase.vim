@@ -1,19 +1,18 @@
+vim9script
+
 if !has("vim9script") || v:version < 900
     echoerr "VimChase: need support vim9script!"
     finish
 endif
-
-vim9script
 
 if exists("g:loaded_chase")
     finish
 endif
 g:loaded_chase = 1
 
-
 import autoload '../autoload/chase.vim'
 
-g:chaseRespectAbbreviation = get(g:, 'chaseRespectAbbreviation', 1)
+g:chaseRespectAbbreviation = get(g:, 'chaseRespectAbbreviation', true)
 g:chaseHighlightTimeout = get(g:, 'chaseHighlightTimeout', 2000)
 
 g:chaseSentenceCasesOrder = get(g:, 'chaseSentenceCasesOrder', [
@@ -39,18 +38,19 @@ g:chaseLetterCasesOrder = get(g:, 'chaseLetterCasesOrder', [
     'lower',
 ])
 
-if !get(g:, 'chaseNomap', 0)
+
+if !get(g:, 'chaseMapDefault', true)
     nnoremap ~ <CMD>call <SID>chase.Next()<CR>
     vnoremap ~ <CMD>call <SID>chase.Next()<CR>
     nnoremap ! <CMD>call <SID>chase.Prev()<CR>
     vnoremap ! <CMD>call <SID>chase.Prev()<CR>
 endif
 
-export def ChaseNext(options: dict<any> = {})
+export def Next(options: dict<any> = {})
     chase.Next(options)
 enddef
 
-export def ChasePrev(options: dict<any> = {})
+export def Prev(options: dict<any> = {})
     chase.Prev(options)
 enddef
 
