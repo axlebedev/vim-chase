@@ -1,4 +1,7 @@
-vim9script
+vim9script noclear
+# Vim plugin for changing word case
+# Maintainer:   Alex Lebedeev <alex@alexlebe.dev>
+# License:      This file is placed in the public domain.
 
 if !has("vim9script") || v:version < 900
     echoerr "VimChase: need support vim9script!"

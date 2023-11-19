@@ -1,0 +1,186 @@
+*vim-chase.txt*
+
+*vim-chase*     vim plugin: change word case
+
+===============================================================================
+CONTENTS                                                *vim-chase-contents*
+
+    Introduction ...................... |vim-chase-intro|
+    Usage ............................. |vim-chase-usage|
+    Configuration ..................... |vim-chase-configuration|
+    Colors ............................ |vim-chase-colors|
+    Commands .......................... |vim-chase-commands|
+    Functions ......................... |vim-chase-functions|
+    Notes ............................. |vim-chase-notes|
+
+===============================================================================
+INTRODUCTION                                               *vim-chase-intro*
+
+'vim-chase' helps to change word (variable, sentence, etc.) case.
+Known cases: 
+|     Case name      |      Example      |
+| ------------------ | ----------------- |
+|  title             |  Hello Vim World  |
+|  camel             |  helloVimWorld    |
+|  pascal            |  HelloVimWorld    |
+|  lower_dash        |  hello-vim-world  |
+|  lower_space       |  hello vim world  |
+|  lower_underscore  |  hello_vim_world  |
+|  upper_dash        |  HELLO-VIM-WORLD  |
+|  upper_underscore  |  HELLO_VIM_WORLD  |
+|  upper_space       |  HELLO VIM WORLD  |
+|  password          |  *************    |
+
+===============================================================================
+USAGE                                                      *vim-chase-usage*
+
+1. Place cursor at word, or visual select text (no multiline selections)
+2. Press `~` (one or several times).  
+
+Default mappints are `~` and `!`: >
+  nnoremap ~ <ScriptCmd>chase.Next()<cr>
+  vnoremap ~ <ScriptCmd>chase.Next()<cr>
+  nnoremap ! <ScriptCmd>chase.Prev()<cr>
+  vnoremap ! <ScriptCmd>chase.Prev()<cr>
+<
+
+===============================================================================
+CONFIGURATION                                      *vim-chase-configuration*
+
+g:chaseMapDefault                                       *g:chaseMapDefault*
+  Type: |Bool|
+  Default: `true`
+  Is default mappings been set by default or not. >
+  let g:chaseMapDefault = false
+<
+
+g:chaseHighlightTimeout                           *g:chaseHighlightTimeout*
+  Type: *Number* milliseconds.  
+  Default: `2000`  
+  Time to highlight _chase_.  
+  Set 0 to disable highlight. >
+  let g:chaseHighlightTimeout = 700
+<
+
+g:chaseRespectAbbreviation                     *g:chaseRespectAbbreviation*
+  Type: *Bool*  
+  Default: `true`  
+  Only for `title`, `camel` and `pascal` cases.  
+  Define how to deal with abbreviations or uppercased sections:  
+  Example:  
+  `g:chaseRespectAbbreviation = true`:  
+  'sendSMSMessage' - 'SendSMSMessage' - 'Send SMS Message'  
+  `g:chaseRespectAbbreviation = false`:  
+  'sendSMSMessage' - 'sendSmsMessage' - 'Send Sms Message' >
+  let g:chaseRespectAbbreviation = false
+<
+
+g:chaseLetterCasesOrder                           *g:chaseLetterCasesOrder*
+  Type: *list<string>*, array of case names  
+  Default: `['upper', 'lower']`  
+  Order, in which single-letter cases will be passed through,
+  starting from current letter's case
+  If current case is undefined - start from beginning of list >
+  let g:chaseLetterCasesOrder = ['upper']
+<
+
+g:chaseWordCasesOrder                               *g:chaseWordCasesOrder*
+  Type: *list<string>*, array of case names  
+  Default: `['upper', 'lower', 'title']`  
+  Order, in which single-word cases will be passed through,
+  starting from current word's case
+  If current case is undefined - start from beginning of list >
+  let g:chaseWordCasesOrder = ['upper']
+<
+
+g:chaseSentenceCasesOrder                       *g:chaseSentenceCasesOrder*
+  Type: *list<string>*, array of case names  
+  Default: >
+  ['camel', 'pascal', 'lower_space', 'lower_dash', 'lower_underscore',
+  'upper_underscore', 'upper_dash', 'upper_space', 'title'] 
+<  
+  Order, in which multi-word cases will be passed through,
+  starting from current word's case
+  If current case is undefined - start from beginning of list >
+  let g:chaseSentenceCasesOrder = ['upper_underscore', 'camel']
+<
+
+===============================================================================
+COLORS                                                    *vim-chase-colors*
+
+ChaseWord                                                       *ChaseWord*
+Color for whole chased word.  
+Default: >
+  highlight link ChaseWord Pmenu
+<
+
+ChaseChangedLetter                                     *ChaseChangedLetter*
+Colors for those letters that were changed  
+Default: >
+  highlight link ChaseChangedLetter Search
+<
+
+ChaseSeparator                                             *ChaseSeparator*
+Colors for those 'separator' characters of current case  
+Default: >
+  highlight link ChaseSeparator ChaseChangedLetter
+<
+
+
+===============================================================================
+COMMANDS                                                *vim-chase-commands*
+
+ChaseNext                                                       *ChaseNext*
+ChasePrev                                                       *ChasePrev*
+
+  Run "chase": change current word's case to next or prev.
+
+ChasePrintAllCases                                     *ChasePrintAllCases*
+
+  Print all case names to 'echom'
+
+===============================================================================
+FUNCTIONS                                              *vim-chase-functions*
+
+First, import chase source file >
+  import 'chase.vim' as chase
+<
+chase.Next                                                   *chase.Next()*
+chase.Prev                                                   *chase.Prev()*
+
+  Run "chase": change current word's case to next or prev. >
+  chase.Next(options = {})  
+  chase.Prev(options = {})  
+<
+
+  `options` is map, where you can pass any of configuration options only for one run.  
+  It may include following configuration options:
+    `chaseRespectAbbreviation`
+    `chaseSentenceCasesOrder`
+    `chaseWordCasesOrder`
+    `chaseLetterCasesOrder`
+    `chaseHighlightTimeout`
+
+  Examples: 
+  Simple run, without any customizations. Use global options >
+  chase.Next() 
+<
+  Simple run, but all abbreviations will be chased as usual word >
+  chase.Next({chaseRespectAbbreviation: false}) 
+< 
+  Replace any variable with CONSTANT_CASE >
+  chase.Next({chaseWordCasesOrder: ['upper'], chaseSentenceCasesOrder: ['upper_underscore']})
+<
+
+chase.PrintAllCases()                               *chase.PrintAllCases()*
+
+  Print all availble case names. >
+  chase.PrintAllCases()
+<
+
+===============================================================================
+NOTES                                                      *vim-chase-notes*
+
+Plugin was originally forked from 'vim-case-change'.  
+If you find a bug, want to add new case, or have an improvement suggestion -
+please place an issue https://github.com/axlebedev/vim-chase.
