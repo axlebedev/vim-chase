@@ -6,10 +6,12 @@ import './helpers.vim'
 import './getconfig.vim'
 import './popup.vim'
 
+var crSaved = maparg('<Enter>', 'n')
 def ResetSessionEndTrigger(): void
     augroup au_vimchase
         autocmd!
     augroup END
+    exe 'nnoremap <Enter> ' .. crSaved
 enddef
 
 def SetSessionEndTrigger(): void
@@ -17,6 +19,7 @@ def SetSessionEndTrigger(): void
         autocmd!
         autocmd CursorMoved,CursorMovedI,InsertEnter * OnSessionEnd()
     augroup END
+    nnoremap <Enter> <ScriptCmd>OnSessionEnd()<CR>
 enddef
 
 export def OnSessionStart(): void
