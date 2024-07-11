@@ -3,7 +3,7 @@
   Plug 'axlebedev/vim-chase'
 ```
 vim9script  
-Change word case, or *chase*: ***ch***ange c***ase*** 
+*Chase*: ***Ch***ange c***ase***
 
 [vim-chase.webm](https://github.com/axlebedev/vim-chase/assets/3949614/69190284-da15-417e-b2cc-6071344bdcca)
 
