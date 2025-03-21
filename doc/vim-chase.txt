@@ -21,6 +21,7 @@ Known cases:
 |     Case name      |      Example      |
 | ------------------ | ----------------- |
 |  title             |  Hello Vim World  |
+|  sentenct          |  Hello vim world  |
 |  camel             |  helloVimWorld    |
 |  pascal            |  HelloVimWorld    |
 |  lower_dash        |  hello-vim-world  |
@@ -65,7 +66,7 @@ g:chaseHighlightTimeout                           *g:chaseHighlightTimeout*
 g:chaseRespectAbbreviation                     *g:chaseRespectAbbreviation*
   Type: *Bool*  
   Default: `true`  
-  Only for `title`, `camel` and `pascal` cases.  
+  Only for `title`, `sentence`, `camel` and `pascal` cases.  
   Define how to deal with abbreviations or uppercased sections:  
   Example:  
   `g:chaseRespectAbbreviation = true`:  
@@ -97,7 +98,7 @@ g:chaseSentenceCasesOrder                       *g:chaseSentenceCasesOrder*
   Type: *list<string>*, array of case names  
   Default: >
   ['camel', 'pascal', 'lower_space', 'lower_dash', 'lower_underscore',
-  'upper_underscore', 'upper_dash', 'upper_space', 'title'] 
+  'upper_underscore', 'upper_dash', 'upper_space', 'title', 'sentence'] 
 <  
   Order, in which multi-word cases will be passed through,
   starting from current word's case

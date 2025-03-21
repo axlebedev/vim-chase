@@ -25,6 +25,7 @@ import './case/lower_space.vim'
 import './case/lower_underscore.vim'
 import './case/pascal.vim'
 import './case/title.vim'
+import './case/sentence.vim'
 import './case/undefined.vim' as undefinedCase
 import './case/upper.vim'
 import './case/upper_dash.vim'
@@ -38,6 +39,7 @@ var casesArray = [
     lower.lower,
     upper.upper,
     title.title,
+    sentence.sentence,
     camel.camel,
     lower_dash.lower_dash,
     lower_space.lower_space,
@@ -89,6 +91,7 @@ def GetCasesOrderByGroup(group: string, forGetWordCase: bool = false): list<stri
     if (forGetWordCase)
         return [
             title.title.name,
+            sentence.sentence.name,
             camel.camel.name,
             lower_dash.lower_dash.name,
             lower_space.lower_space.name,

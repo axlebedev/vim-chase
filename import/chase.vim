@@ -28,6 +28,7 @@ g:chaseSentenceCasesOrder = get(g:, 'chaseSentenceCasesOrder', [
     'upper_dash',
     'upper_space',
     'title',
+    'sentence',
 ])
 
 g:chaseWordCasesOrder = get(g:, 'chaseWordCasesOrder', [

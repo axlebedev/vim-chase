@@ -15,6 +15,7 @@ Supported cases:
 | Case name | Example |
 | --------- | ------- |
 | `title` | `Hello Vim World` |
+| `sentence` | `Hello vim world` |
 | `camel` | `helloVimWorld` |
 | `pascal` | `HelloVimWorld` |
 | `lower_dash` | `hello-vim-world` |
@@ -51,7 +52,7 @@ Default: `2000`
 `let g:chaseHighlightTimeout = 700`
 
 #### `g:chaseRespectAbbreviation`
-Only for `title`, `camel` and `pascal` cases.  
+Only for `title`, `sentence`, `camel` and `pascal` cases.  
 Define how to deal with abbreviations or uppercased sections:  
 <details>
 <summary>Example</summary>
@@ -101,6 +102,7 @@ If current case is undefined - start from beginning of list
     'upper_dash',
     'upper_space',
     'title',
+    'sentence',
 ]
 </code>
 </pre>
